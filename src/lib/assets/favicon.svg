@@ -6,14 +6,12 @@
     </linearGradient>
   </defs>
   <rect width="64" height="64" rx="14" fill="#FAFAF9"/>
-  <!-- Centering: 
-       Start with 24x24 icon. 
-       Translate center (12,12) to origin: translate(-12,-12)
-       Scale 1.8x: scale(1.8) (Size becomes ~43px)
-       Rotate -15: rotate(-15)
-       Translate to center of 64x64 (32,32): translate(32,32)
+  <!-- 
+       Updated transformations:
+       Rotation: Changed to 12deg (clockwise/right)
+       Scale: Kept at 2.0 (MAX size)
   -->
-  <g transform="translate(32, 32) rotate(-15) scale(1.8) translate(-12, -12)">
+  <g transform="translate(32, 33) rotate(12) scale(2.0) translate(-12, -12)">
     <path d="M12 6v16" stroke="url(#iconGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     <path d="m19 13 2-1a9 9 0 0 1-18 0l2 1" stroke="url(#iconGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
     <path d="M9 11h6" stroke="url(#iconGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
