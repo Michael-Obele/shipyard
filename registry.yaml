@@ -1,0 +1,9 @@
+groups:
+  - id: 'cinder'
+    name: 'Cinder Ecosystem'
+    repos: ['cinder', 'cinder-sv', 'cinder-mcp']
+    featured: true
+overrides:
+  'tif':
+    name: 'Tech Invoice Forge'
+    featured: true
