@@ -4,6 +4,7 @@
 	import { Menu, X, Moon, Sun, Anchor, Github } from '@lucide/svelte';
 	import { toggleMode } from 'mode-watcher';
 	import { MediaQuery } from 'svelte/reactivity';
+	import { page } from '$app/state';
 
 	let isOpen = $state(false);
 	const isMobile = new MediaQuery('max-width: 768px');
@@ -17,6 +18,12 @@
 	function handleNavClick() {
 		isOpen = false;
 	}
+
+	const links = [
+		{ name: 'Home', href: '/' },
+		{ name: 'Projects', href: '/#projects' },
+		{ name: 'About', href: '/about' }
+	];
 </script>
 
 <!-- Desktop Navigation -->
@@ -41,21 +48,13 @@
 
 		<!-- Desktop Links -->
 		<div class="hidden items-center gap-1 md:flex">
-			<a
-				href="/"
-				class="rounded-md px-4 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
-				>Home</a
-			>
-			<a
-				href="#projects"
-				class="rounded-md px-4 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
-				>Projects</a
-			>
-			<a
-				href="#about"
-				class="rounded-md px-4 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground"
-				>About</a
-			>
+			{#each links as link}
+				<a
+					href={link.href}
+					class="rounded-md px-4 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground {page.url.pathname === link.href || (link.href.startsWith('/#') && page.url.pathname === '/') ? 'bg-accent/50 text-primary' : ''}"
+					>{link.name}</a
+				>
+			{/each}
 		</div>
 
 		<!-- Actions -->
@@ -103,27 +102,15 @@
 							>
 						</Sheet.Header>
 						<nav class="flex flex-col gap-2">
-							<a
-								href="/"
-								class="flex items-center justify-between rounded-lg border border-transparent p-4 text-lg font-medium transition-all hover:border-slate-800 hover:bg-accent"
-								onclick={handleNavClick}
-							>
-								Home
-							</a>
-							<a
-								href="#projects"
-								class="flex items-center justify-between rounded-lg border border-transparent p-4 text-lg font-medium transition-all hover:border-slate-800 hover:bg-accent"
-								onclick={handleNavClick}
-							>
-								Projects
-							</a>
-							<a
-								href="#about"
-								class="flex items-center justify-between rounded-lg border border-transparent p-4 text-lg font-medium transition-all hover:border-slate-800 hover:bg-accent"
-								onclick={handleNavClick}
-							>
-								About
-							</a>
+							{#each links as link}
+								<a
+									href={link.href}
+									class="flex items-center justify-between rounded-lg border border-transparent p-4 text-lg font-medium transition-all hover:border-slate-800 hover:bg-accent {page.url.pathname === link.href ? 'bg-accent/50 text-primary' : ''}"
+									onclick={handleNavClick}
+								>
+									{link.name}
+								</a>
+							{/each}
 							<div class="mt-8 flex gap-4 p-4">
 								<a
 									href="https://github.com"
