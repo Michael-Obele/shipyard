@@ -19,9 +19,9 @@ _Focus on setting up a robust, scalable environment for the registry._
 
 _Focus on the core logic that merges automation with manual curation._
 
-- [ ] Implement `+page.server.ts` with repository merging logic.
-- [ ] Build the `ProjectCard` component with Svelte 5 runes.
-- [ ] Create the `registry.yaml` parsing logic.
+- [x] Implement repository merging logic in `src/lib/server/registry.ts`.
+- [x] Build the `ProjectCard` component with Svelte 5 runes.
+- [x] Define registry groups in `src/lib/server/registry-config.ts`.
 
 ## Phase 3: Aesthetic & Interaction (The Developer Experience)
 

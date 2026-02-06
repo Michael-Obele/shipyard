@@ -11,58 +11,61 @@ status: in-progress
 
 ### Hybrid Source Strategy
 
-We merge **automated data** (GitHub API) with **curated metadata** (Local YAML).
+We merge **automated data** (GitHub API) with **curated metadata** (Local TypeScript Config).
 
 **1. The Source: GitHub GraphQL**
 Fetches live stats (stars, dates, languages) for everything.
 
 ```graphql
 query {
-  viewer {
-    repositories(
-      first: 100
-      orderBy: { field: UPDATED_AT, direction: DESC }
-      privacy: PUBLIC
-    ) {
-      nodes {
-        id
-        name
-        description
-        stargazerCount
-        updatedAt
-        url
-        repositoryTopics(first: 5) {
-          nodes {
-            topic {
-              name
-            }
-          }
-        }
-        languages(first: 3, orderBy: { field: SIZE, direction: DESC }) {
-          nodes {
-            name
-            color
-          }
-        }
-      }
-    }
-  }
+	viewer {
+		repositories(first: 100, orderBy: { field: UPDATED_AT, direction: DESC }, privacy: PUBLIC) {
+			nodes {
+				id
+				name
+				description
+				stargazerCount
+				updatedAt
+				url
+				repositoryTopics(first: 5) {
+					nodes {
+						topic {
+							name
+						}
+					}
+				}
+				languages(first: 3, orderBy: { field: SIZE, direction: DESC }) {
+					nodes {
+						name
+						color
+					}
+				}
+			}
+		}
+	}
 }
 ```
 
-**2. The Controller: `registry.yaml`**
-Overrides the automation and defines clusters.
+**2. The Controller: `registry-config.ts`**
+Overrides the automation and defines clusters (groups).
 
-```yaml
-groups:
-  - id: "cinder"
-    name: "Cinder Ecosystem"
-    repos: ["cinder", "cinder-sv", "cinder-mcp"]
-    featured: true
-overrides:
-  "tif":
-    name: "Tech Invoice Forge"
-    featured: true
+```typescript
+export const registryConfig: RegistryConfig = {
+	groups: [
+		{
+			id: 'cinder',
+			name: 'Cinder Ecosystem',
+			repos: ['cinder', 'cinder-sv', 'cinder-mcp'],
+			featured: true
+		}
+	],
+	overrides: {
+		tif: {
+			name: 'Tech Invoice Forge',
+			featured: true
+		}
+	}
+};
 ```
 
 ## Architecture {#architecture}
