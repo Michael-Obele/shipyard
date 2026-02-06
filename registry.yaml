@@ -3,6 +3,10 @@ groups:
     name: 'Cinder Ecosystem'
     repos: ['cinder', 'cinder-sv', 'cinder-mcp']
     featured: true
+  - id: 'vaultnote'
+    name: 'VaultNote Ecosystem'
+    repos: ['VaultNote', 'VaultNoteServer']
+    featured: true
 overrides:
   'tif':
     name: 'Tech Invoice Forge'

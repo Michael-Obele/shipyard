@@ -3,6 +3,7 @@ export interface RepoData {
 	name: string;
 	description: string | null;
 	url: string;
+	isFork: boolean;
 	stargazers: {
 		totalCount: number;
 	};

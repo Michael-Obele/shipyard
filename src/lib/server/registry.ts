@@ -137,7 +137,7 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 			languages: uniqueLangs,
 			isCluster: true,
 			featured: group.featured,
-			projectType: 'tool',
+			projectType: groupRepos.some((r) => detectProjectType(r) === 'app') ? 'app' : 'tool',
 			repoCount: groupRepos.length,
 			subProjects: groupRepos
 				.map((r) => ({
@@ -153,6 +153,9 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 
 	// 4. Process Individual Repos
 	for (const repo of repos) {
+		// Skip forks - only show original projects
+		if (repo.isFork) continue;
+
 		if (processedRepos.has(repo.name)) continue;
 
 		const override = config.overrides?.[repo.name];

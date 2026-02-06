@@ -14,6 +14,7 @@ query {
         name
         description
         url
+        isFork
         stargazers {
             totalCount
         }
