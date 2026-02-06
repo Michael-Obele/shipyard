@@ -52,6 +52,7 @@ Default to **Remote Functions** (experimental `@sveltejs/kit` features) over `+p
 - [shipyard/](shipyard/): Project specification and blueprint (Source of Truth).
 - `src/lib/remote/`: Logic for data fetching and mutations.
 - `src/lib/components/`: Reusable UI components following the design system.
+- `src/lib/components/`: Shared components (e.g., navbar, footer) in `blocks/` subfolder; route-specific components in folders named after the route.
 - `registry.yaml`: (To be created) Curated metadata and cluster definitions.
 
 ## 🚀 Common Workflows
