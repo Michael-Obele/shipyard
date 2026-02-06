@@ -11,11 +11,21 @@
 		Globe,
 		Cpu,
 		Terminal,
-		Calendar
+		Calendar,
+		Code,
+		Wrench,
+		Box,
+		Zap,
+		Activity,
+		Book,
+		Settings,
+		Construction,
+		Github
 	} from 'lucide-svelte';
+	import { page } from '$app/state';
+	import { getProject } from '$lib/remote/project.remote';
 
-	let { data } = $props();
-	let project = $derived(data.project);
+	const project = $derived(await getProject(page.params.id as string));
 
 	let date = $derived(
 		new Date(project.updatedAt).toLocaleDateString('en-US', {
@@ -24,14 +34,96 @@
 			year: 'numeric'
 		})
 	);
+
+	const projectTypeConfig: Record<
+		string,
+		{
+			label: string;
+			icon: string;
+			color: string;
+		}
+	> = {
+		app: { label: 'Full-Stack App', icon: 'box', color: 'text-indigo-500' },
+		api: { label: 'API/Service', icon: 'zap', color: 'text-amber-500' },
+		library: { label: 'Library', icon: 'book', color: 'text-cyan-500' },
+		'mcp-server': { label: 'MCP Server', icon: 'cpu', color: 'text-purple-500' },
+		plugin: { label: 'Plugin', icon: 'settings', color: 'text-pink-500' },
+		tool: { label: 'Developer Tool', icon: 'wrench', color: 'text-orange-500' },
+		docs: { label: 'Documentation', icon: 'book', color: 'text-emerald-500' },
+		framework: { label: 'Framework', icon: 'construction', color: 'text-blue-500' }
+	};
+
+	const typeConfig = $derived(
+		projectTypeConfig[project.projectType || 'tool'] || projectTypeConfig['tool']
+	);
+
+	const colorClasses: Record<string, { border: string; gradient: string; text: string }> = {
+		'text-indigo-500': {
+			border: 'border-indigo-500/20',
+			gradient: 'from-indigo-500/10 to-indigo-500/5 hover:border-indigo-500/40',
+			text: 'text-indigo-500'
+		},
+		'text-amber-500': {
+			border: 'border-amber-500/20',
+			gradient: 'from-amber-500/10 to-amber-500/5 hover:border-amber-500/40',
+			text: 'text-amber-500'
+		},
+		'text-cyan-500': {
+			border: 'border-cyan-500/20',
+			gradient: 'from-cyan-500/10 to-cyan-500/5 hover:border-cyan-500/40',
+			text: 'text-cyan-500'
+		},
+		'text-purple-500': {
+			border: 'border-purple-500/20',
+			gradient: 'from-purple-500/10 to-purple-500/5 hover:border-purple-500/40',
+			text: 'text-purple-500'
+		},
+		'text-pink-500': {
+			border: 'border-pink-500/20',
+			gradient: 'from-pink-500/10 to-pink-500/5 hover:border-pink-500/40',
+			text: 'text-pink-500'
+		},
+		'text-orange-500': {
+			border: 'border-orange-500/20',
+			gradient: 'from-orange-500/10 to-orange-500/5 hover:border-orange-500/40',
+			text: 'text-orange-500'
+		},
+		'text-emerald-500': {
+			border: 'border-emerald-500/20',
+			gradient: 'from-emerald-500/10 to-emerald-500/5 hover:border-emerald-500/40',
+			text: 'text-emerald-500'
+		},
+		'text-blue-500': {
+			border: 'border-blue-500/20',
+			gradient: 'from-blue-500/10 to-blue-500/5 hover:border-blue-500/40',
+			text: 'text-blue-500'
+		}
+	};
+
+	const typeColorClasses = $derived(
+		colorClasses[typeConfig.color] || colorClasses['text-indigo-500']
+	);
+
+	const iconComponents: Record<string, any> = {
+		box: Box,
+		zap: Zap,
+		book: Book,
+		cpu: Cpu,
+		settings: Settings,
+		wrench: Wrench,
+		construction: Construction,
+		code: Code
+	};
+
+	const IconComponent = $derived(iconComponents[typeConfig.icon] || Code);
 </script>
 
-<div class="min-h-screen bg-background font-sans selection:bg-primary/20">
+<div class="min-h-screen font-sans selection:bg-primary/20">
 	<!-- Hero Section -->
 	<div class="relative border-b border-primary/10 bg-secondary/5 py-12 md:py-20 lg:py-24">
 		<!-- Grid Pattern Background -->
 		<div
-			class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"
+			class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px]"
 		></div>
 
 		<div class="relative container mx-auto max-w-5xl px-6 md:px-12">
@@ -65,7 +157,7 @@
 						{project.description || 'No transmission data available for this module.'}
 					</p>
 
-					<div class="flex flex-wrap gap-3 pt-2">
+					<div class="flex flex-wrap gap-2 pt-4">
 						<Button
 							size="lg"
 							class="group h-12 gap-2 text-base font-semibold shadow-lg shadow-primary/20"
@@ -73,19 +165,19 @@
 							target="_blank"
 						>
 							{#if project.isCluster}
-								<Globe class="size-4" /> View Organization
+								<Globe class="size-4 transition-transform group-hover:scale-110" />
+								View Organization
 							{:else}
-								<ExternalLink class="size-4" /> Launch Repository
+								<Github class="size-4 transition-transform group-hover:scale-110" />
+								Launch Repository
 							{/if}
 						</Button>
-						{#if !project.isCluster}
-							<div
-								class="flex items-center gap-2 rounded-lg border border-border px-4 py-2 font-mono text-sm text-muted-foreground"
-							>
-								<Terminal class="size-4" />
-								<span>npm install {project.name.toLowerCase()}</span>
-							</div>
-						{/if}
+						<div
+							class="flex items-center gap-3 rounded-lg border {typeColorClasses.border} bg-linear-to-br {typeColorClasses.gradient} px-4 py-3 backdrop-blur-sm transition-all hover:shadow-lg"
+						>
+							<IconComponent class={`size-5 ${typeConfig.color}`} strokeWidth={1.5} />
+							<span class="text-sm font-medium">{typeConfig.label}</span>
+						</div>
 					</div>
 				</div>
 
@@ -151,6 +243,120 @@
 						<p class="text-muted-foreground/60 italic">
 							Full documentation and source code streams are available in the repository uplink.
 						</p>
+					</div>
+				</section>
+
+				<!-- Project Type Info Section -->
+				<section class="space-y-6">
+					<div class="flex items-center justify-between">
+						<h2
+							class="font-mono text-sm font-semibold tracking-wider text-muted-foreground uppercase"
+						>
+							// Project Information
+						</h2>
+						<span class="text-xs text-muted-foreground/60">Details & Stack</span>
+					</div>
+
+					<!-- Main Info Grid -->
+					<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+						<!-- Project Type Card -->
+						<div
+							class="group relative overflow-hidden rounded-lg border {typeColorClasses.border} bg-linear-to-brtypeColorClasses.gradient} p-6 backdrop-blur-sm transition-all hover:shadow-lg"
+						>
+							<div class="relative z-10 space-y-3">
+								<div class="flex items-start justify-between">
+									<IconComponent
+										class={`size-6 ${typeConfig.color} transition-transform group-hover:scale-110 group-hover:rotate-3`}
+										strokeWidth={1.5}
+									/>
+									<span class={`rounded-full px-2 py-1 text-xs font-semibold ${typeConfig.color}`}>
+										{typeConfig.label}
+									</span>
+								</div>
+								<div>
+									<p class="text-xs font-medium tracking-wider text-muted-foreground uppercase">
+										Project Type
+									</p>
+									<p class="mt-1 text-sm font-semibold text-foreground">{typeConfig.label}</p>
+								</div>
+							</div>
+						</div>
+
+						<!-- Language Stack Card -->
+						{#if project.languages.length > 0}
+							<div
+								class="group relative overflow-hidden rounded-lg border border-cyan-500/20 bg-linear-to-br from-cyan-500/10 to-cyan-500/5 p-6 backdrop-blur-sm transition-all hover:border-cyan-500/40 hover:shadow-lg"
+							>
+								<div class="relative z-10 space-y-3">
+									<div class="flex items-start justify-between">
+										<Code
+											class="size-6 text-cyan-500 transition-transform group-hover:scale-110"
+											strokeWidth={1.5}
+										/>
+										<span
+											class="rounded-full bg-linear-to-br from-cyan-500/10 to-cyan-500/5 px-2 py-1 text-xs font-semibold text-cyan-500"
+										>
+											Stack
+										</span>
+									</div>
+									<div>
+										<p class="text-xs font-medium tracking-wider text-muted-foreground uppercase">
+											Technology Stack
+										</p>
+										<div class="mt-2 flex flex-wrap gap-1.5">
+											{#each project.languages.slice(0, 2) as lang}
+												<Badge variant="secondary" class="text-xs font-medium">
+													{lang.name}
+												</Badge>
+											{/each}
+											{#if project.languages.length > 2}
+												<Badge variant="secondary" class="text-xs font-medium">
+													+{project.languages.length - 2}
+												</Badge>
+											{/if}
+										</div>
+									</div>
+								</div>
+							</div>
+						{/if}
+
+						<!-- Stats Card -->
+						<div
+							class="group relative overflow-hidden rounded-lg border border-yellow-500/20 bg-linear-to-br from-yellow-500/10 to-yellow-500/5 p-6 backdrop-blur-sm transition-all hover:border-yellow-500/40 hover:shadow-lg"
+						>
+							<div class="relative z-10 space-y-3">
+								<div class="flex items-start justify-between">
+									<Star
+										class="size-6 text-yellow-500 transition-transform group-hover:scale-110 group-hover:rotate-12"
+										fill="currentColor"
+										strokeWidth={1.5}
+									/>
+									<span
+										class="rounded-full bg-linear-to-br from-yellow-500/10 to-yellow-500/5 px-2 py-1 text-xs font-semibold text-yellow-500"
+									>
+										Popularity
+									</span>
+								</div>
+								<div>
+									<p class="text-xs font-medium tracking-wider text-muted-foreground uppercase">
+										Stars
+									</p>
+									<p class="mt-1 text-lg font-bold text-foreground">
+										{project.stars.toLocaleString()}
+									</p>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Last Updated Info -->
+					<div
+						class="flex items-center gap-2 rounded-lg border border-border/50 bg-card/30 px-4 py-3 backdrop-blur-sm"
+					>
+						<Calendar class="size-4 text-muted-foreground/60" strokeWidth={1.5} />
+						<span class="text-sm text-muted-foreground"
+							>Last updated <span class="font-semibold text-foreground">{date}</span></span
+						>
 					</div>
 				</section>
 

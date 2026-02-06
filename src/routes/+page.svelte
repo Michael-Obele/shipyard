@@ -3,8 +3,9 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Terminal, Activity, Anchor } from 'lucide-svelte';
+	import { getProjects } from '$lib/remote/projects.remote';
 
-	let { data } = $props();
+	const projects = $derived(await getProjects());
 </script>
 
 <div class="min-h-screen bg-background p-6 font-sans selection:bg-primary/20 md:p-12">
@@ -32,7 +33,7 @@
 					<span>SYSTEM NORMAL</span>
 				</div>
 				<div class="px-2">
-					<span class="font-bold text-foreground">{data.projects.length}</span> MODULES ACTIVE
+					<span class="font-bold text-foreground">{projects.length}</span> MODULES ACTIVE
 				</div>
 			</div>
 		</div>
@@ -47,18 +48,18 @@
 			<span>Verified Builds Only</span>
 		</div>
 
-		<Separator class="bg-gradient-to-r from-primary/30 to-transparent" />
+		<Separator class="bg-linear-to-r from-primary/30 to-transparent" />
 	</header>
 
 	<div class="space-y-12">
 		<!-- Hero Section -->
-		{#if data.projects.length > 0}
-			{@const hero = data.projects[0]}
+		{#if projects.length > 0}
+			{@const hero = projects[0]}
 			<div
 				class="relative overflow-hidden rounded-2xl border border-primary/20 bg-card/60 p-8 shadow-2xl backdrop-blur-md transition-all hover:border-primary/40 md:p-12"
 			>
 				<div
-					class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-background to-background"
+					class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-primary/10 via-background to-background"
 				></div>
 				<div class="grid gap-8 lg:grid-cols-2">
 					<div class="space-y-6">
@@ -93,12 +94,12 @@
 
 		<!-- Masonry-ish Grid / Data-Dense Layout (Starting from index 1) -->
 		<div class="grid auto-rows-min grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-			{#each data.projects.slice(1) as project (project.id)}
+			{#each projects.slice(1) as project (project.id)}
 				<ProjectCard {project} />
 			{/each}
 
 			<!-- Empty State if strict filter removes everything -->
-			{#if data.projects.length === 0}
+			{#if projects.length === 0}
 				<div
 					class="col-span-full space-y-4 rounded-xl border-2 border-dashed border-border/50 py-20 text-center"
 				>

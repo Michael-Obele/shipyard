@@ -36,6 +36,7 @@ export interface DisplayProject {
 	languages: { name: string; color: string }[];
 	isCluster: boolean;
 	featured: boolean;
+	projectType?: 'app' | 'api' | 'library' | 'mcp-server' | 'plugin' | 'tool' | 'docs' | 'framework';
 	repoCount?: number;
 	subProjects?: {
 		name: string;

@@ -2,6 +2,93 @@ import { fetchRepositories } from './github';
 import { registryConfig } from './registry-config';
 import type { DisplayProject, RepoData } from '$lib/types';
 
+/**
+ * Determines the project type based on repository metadata
+ */
+function detectProjectType(repo: RepoData): DisplayProject['projectType'] {
+	const topics = repo.repositoryTopics.nodes.map((n) => n.topic.name).join(' ').toLowerCase();
+	const languages = repo.languages.edges.map((e) => e.node.name).map((n) => n.toLowerCase());
+	const description = (repo.description || '').toLowerCase();
+
+	// Check for MCP servers
+	if (topics.includes('mcp') || topics.includes('mcp-server')) return 'mcp-server';
+
+	// Check for plugin/extension
+	if (
+		topics.includes('plugin') ||
+		topics.includes('extension') ||
+		repo.name.includes('plugin') ||
+		repo.name.includes('extension')
+	) {
+		return 'plugin';
+	}
+
+	// Check for library/package
+	if (
+		topics.includes('library') ||
+		topics.includes('npm') ||
+		topics.includes('package') ||
+		description.includes('library') ||
+		description.includes('npm package')
+	) {
+		return 'library';
+	}
+
+	// Check for API/Service
+	if (
+		topics.includes('api') ||
+		topics.includes('rest-api') ||
+		topics.includes('backend') ||
+		languages.includes('go') ||
+		(languages.includes('rust') && description.includes('api')) ||
+		description.includes('api') ||
+		description.includes('service')
+	) {
+		return 'api';
+	}
+
+	// Check for documentation
+	if (
+		topics.includes('docs') ||
+		topics.includes('documentation') ||
+		repo.name.includes('-docs') ||
+		description.includes('documentation')
+	) {
+		return 'docs';
+	}
+
+	// Check for tool
+	if (topics.includes('tool') || topics.includes('cli') || languages.includes('rust')) {
+		return 'tool';
+	}
+
+	// Check for framework
+	if (
+		topics.includes('framework') ||
+		topics.includes('ssg') ||
+		description.includes('static site generator')
+	) {
+		return 'framework';
+	}
+
+	// Check for full applications
+	if (
+		description.includes('application') ||
+		description.includes('app') ||
+		topics.includes('desktop') ||
+		topics.includes('tauri')
+	) {
+		return 'app';
+	}
+
+	// Default to app if Svelte/SvelteKit project
+	if (languages.includes('svelte') || topics.includes('sveltekit')) {
+		return 'app';
+	}
+
+	return 'tool';
+}
+
 export async function getRegistry(): Promise<DisplayProject[]> {
 	// 1. Load Registry Config
 	const config = registryConfig;
@@ -50,6 +137,7 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 			languages: uniqueLangs,
 			isCluster: true,
 			featured: group.featured,
+			projectType: 'tool',
 			repoCount: groupRepos.length,
 			subProjects: groupRepos
 				.map((r) => ({
@@ -82,7 +170,8 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 			topics: repo.repositoryTopics.nodes.map((n) => n.topic.name),
 			languages: repo.languages.edges.map((e) => e.node),
 			isCluster: false,
-			featured: override?.featured || false
+			featured: override?.featured || false,
+			projectType: detectProjectType(repo)
 		});
 	}
 

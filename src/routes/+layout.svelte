@@ -11,10 +11,10 @@
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 
 <ModeWatcher />
-<div class="flex min-h-screen flex-col">
-	<Navbar />
-	<main class="flex-1">
+<Navbar />
+<div class=" min-h-screen bg-background">
+	<div class="">
 		{@render children()}
-	</main>
+	</div>
 	<Footer />
 </div>

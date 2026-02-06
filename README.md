@@ -4,12 +4,13 @@ A unified, high-performance engineering registry that showcases your GitHub proj
 
 ## Features
 
-- 🎨 **Mechanical Artisan Design**: Slate + Indigo theme with structural sincerity and kinetic weight
-- 📊 **Hybrid Data Layer**: Merges live GitHub GraphQL stats with curated metadata
-- 🏠 **Bento Grid Layout**: High-impact projects occupy larger cells based on curation
-- 🔍 **Tech X-Ray**: Hover cards reveal detailed repository stats and tech stack
-- ⚡ **Instant Feedback**: ISR caching with 60-minute TTL for optimal performance
-- 🎯 **Project Clustering**: Group related repositories (e.g., monorepos) into virtual entities
+- 🎨 **Mechanical Artisan Design**: Slate + Indigo theme with structural sincerity, kinetic weight, and glassmorphism.
+- 🚀 **Hero Mission Control**: Prominently showcases your latest or most critical project with a dedicated "Latest Deployment" hero section.
+- 📊 **Hybrid Data Layer**: Merges live GitHub GraphQL stats (stars, topics) with curated metadata from local config.
+- 🏠 **Adaptive Grid**: A responsive layout that combines a featured hero view with a data-dense masonry-style grid for other modules.
+- 🔍 **Tech X-Ray**: Components revealing detailed repository stats and tech stack.
+- ⚡ **Instant Feedback**: ISR caching with 60-minute TTL for optimal performance.
+- 🎯 **Project Clustering**: Group related repositories (e.g., the Cinder Ecosystem) into virtual entities.
 
 ## Quick Start
 
@@ -36,7 +37,9 @@ cp .env.example .env
 
 3. **Populate the registry:**
 
-Edit `src/lib/server/registry-config.ts` to define your project groups and overrides:
+Edit `src/lib/server/registry-config.ts` to define your project groups and overrides.
+
+**Example Configuration:**
 
 ```typescript
 export const registryConfig = {
@@ -57,6 +60,8 @@ export const registryConfig = {
 };
 ```
 
+*This config groups multiple Cinder repos into one ecosystem and promotes "Tech Invoice Forge" to a featured status.*
+
 4. **Run development server:**
 
 ```bash
@@ -70,7 +75,7 @@ Open [http://localhost:5173](http://localhost:5173) to see your registry.
 ```
 src/
 ├── lib/
-│   ├── components/        # UI components (shadcn-svelte)
+│   ├── components/        # UI components (shadcn-svelte + Bits UI)
 │   ├── server/            # GitHub API & registry logic
 │   │   ├── github.ts       # GraphQL query + fetcher
 │   │   ├── registry.ts     # Data aggregation logic
@@ -79,7 +84,7 @@ src/
 │   └── utils.ts            # Utility functions (cn, etc.)
 ├── routes/
 │   ├── +layout.svelte      # Layout wrapper
-│   ├── +page.svelte        # Main registry grid
+│   ├── +page.svelte        # Main registry grid (Hero + Grid)
 │   ├── +page.server.ts     # Data loader
 │   └── layout.css          # Design system variables
 shipyard/                   # Project specification files
@@ -106,16 +111,16 @@ Uses **Tailwind CSS v4** with a custom Slate + Indigo palette:
 
 - **Primary**: Indigo 500 (#7c3aed)
 - **Background**: Slate 950 (#0f172a)
-- **Card**: Glassmorphism with `bg-card/50 backdrop-blur-md`
-- **Hover Effects**: 102% scaling with subtle radial glow
+- **Card**: Glassmorphism with `bg-card/30 backdrop-blur-sm`
+- **Typography**: Inter + Space Mono (or system equivalents)
 
 ### Components
 
 All UI primitives from **shadcn-svelte** (Bits UI):
 
 - **Card**, **Badge**, **Button**, **Separator**: Standard Shadcn components
-- **ProjectCard**: Custom wrapper showing project stats with HoverCard tech details
-- **BentoGrid**: CSS Grid responsive layout with featured item expansion
+- **ProjectCard**: Custom wrapper showing project stats with hover details.
+- **Hero Section**: Dedicated high-impact view for the first project in the list.
 
 ## Environment Variables
 
@@ -154,26 +159,3 @@ See [shipyard/todos.md](./shipyard/todos.md) for planned enhancements.
 ## License
 
 MIT
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
