@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Sheet from '$lib/components/ui/sheet';
 	import { Button } from '$lib/components/ui/button';
-	import { Menu, X, Moon, Sun } from '@lucide/svelte';
+	import { Menu, X, Moon, Sun, Anchor } from '@lucide/svelte';
 	import { toggleMode } from 'mode-watcher';
 
 	let isOpen = $state(false);
@@ -18,6 +18,7 @@
 	<div class="container mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
 		<!-- Logo/Brand -->
 		<div class="flex items-center gap-2">
+			<Anchor class="size-6 rotate-12 text-primary" />
 			<div class="text-lg font-bold text-primary">Shipyard</div>
 		</div>
 
