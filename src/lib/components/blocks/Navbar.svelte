@@ -51,8 +51,11 @@
 			{#each links as link}
 				<a
 					href={link.href}
-					class="rounded-md px-4 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground {page.url.pathname === link.href || (link.href.startsWith('/#') && page.url.pathname === '/') ? 'bg-accent/50 text-primary' : ''}"
-					>{link.name}</a
+					class="rounded-md px-4 py-2 text-sm font-medium transition-all hover:bg-accent hover:text-accent-foreground {page
+						.url.pathname === link.href ||
+					(link.href.startsWith('/#') && page.url.pathname === '/')
+						? 'bg-accent/50 text-primary'
+						: ''}">{link.name}</a
 				>
 			{/each}
 		</div>
@@ -105,7 +108,10 @@
 							{#each links as link}
 								<a
 									href={link.href}
-									class="flex items-center justify-between rounded-lg border border-transparent p-4 text-lg font-medium transition-all hover:border-slate-800 hover:bg-accent {page.url.pathname === link.href ? 'bg-accent/50 text-primary' : ''}"
+									class="flex items-center justify-between rounded-lg border border-transparent p-4 text-lg font-medium transition-all hover:border-slate-800 hover:bg-accent {page
+										.url.pathname === link.href
+										? 'bg-accent/50 text-primary'
+										: ''}"
 									onclick={handleNavClick}
 								>
 									{link.name}

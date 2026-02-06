@@ -118,6 +118,21 @@
 	const IconComponent = $derived(iconComponents[typeConfig.icon] || Code);
 </script>
 
+<svelte:head>
+	<title>{project.name} - Shipyard</title>
+	<meta name="description" content={project.description || `${project.name} - A curated open-source project in the Shipyard registry.`} />
+	<meta name="keywords" content={project.topics.join(', ')} />
+	<link rel="canonical" href="https://shipyard.registry/projects/{project.id}" />
+	<meta property="og:title" content="{project.name} - Shipyard" />
+	<meta property="og:description" content={project.description || `${project.name} - A curated open-source project.`} />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://shipyard.registry/projects/{project.id}" />
+	<meta property="og:image" content="https://opengraph.githubassets.com/1/{project.url.replace('https://github.com/', '')}" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="{project.name} - Shipyard" />
+	<meta name="twitter:description" content={project.description || `${project.name} - A curated open-source project.`} />
+</svelte:head>
+
 <div class="min-h-screen font-sans selection:bg-primary/20">
 	<!-- Hero Section -->
 	<div class="relative border-b border-primary/10 bg-secondary/5 py-12 md:py-20 lg:py-24">

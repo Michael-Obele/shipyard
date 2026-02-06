@@ -2,11 +2,84 @@
 	import ProjectCard from '$lib/components/page/ProjectCard.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Terminal, Activity, Anchor } from 'lucide-svelte';
+	import {
+		Terminal,
+		Activity,
+		Anchor,
+		Sparkles,
+		Layers,
+		Beaker,
+		Cpu,
+		ArrowRight,
+		Shield,
+		BookOpen,
+		Network,
+		Boxes
+	} from '@lucide/svelte';
 	import { getProjects } from '$lib/remote/projects.remote';
 
 	const projects = $derived(await getProjects());
+
+	const hero = $derived(projects.length > 0 ? projects[0] : null);
+
+	const featuredStacks = $derived(
+		projects
+			.slice(1)
+			.filter((p) => p.featured && !p.isCluster && !p.experimental)
+	);
+
+	const groups = $derived(
+		projects
+			.slice(1)
+			.filter((p) => p.isCluster && !p.experimental)
+	);
+
+	const experimental = $derived(
+		projects
+			.slice(1)
+			.filter((p) => p.experimental)
+	);
+
+	const generalRegistry = $derived(
+		projects
+			.slice(1)
+			.filter((p) => !p.featured && !p.isCluster && !p.experimental)
+	);
 </script>
+
+<svelte:head>
+	<title>Shipyard - Project Registry</title>
+	<meta name="description" content="Discover curated open-source projects and developer tools. A Mechanical Artisan registry showcasing innovative software solutions, frameworks, and applications." />
+	<meta name="keywords" content="open source, projects, developer tools, software registry, frameworks, applications" />
+	<link rel="canonical" href="https://shipyard.registry/" />
+	<meta property="og:title" content="Shipyard - Project Registry" />
+	<meta property="og:description" content="Discover curated open-source projects and developer tools. A Mechanical Artisan registry showcasing innovative software solutions." />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://shipyard.registry/" />
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="Shipyard - Project Registry" />
+	<meta name="twitter:description" content="Discover curated open-source projects and developer tools." />
+</svelte:head>
+
+{#snippet sectionHeader(title: string, tagline: string, icon: any, id: string)}
+	{@const Icon = icon}
+	<div {id} class="mb-8 space-y-4 pt-12">
+		<div class="flex items-center gap-3">
+			<div class="rounded-lg border border-slate-800 bg-secondary/50 p-2 text-primary shadow-inner">
+				<Icon class="size-5" />
+			</div>
+			<div class="space-y-1">
+				<h2 class="text-xl font-bold tracking-tight text-foreground uppercase md:text-2xl">
+					{title}
+				</h2>
+				<p class="font-mono text-xs tracking-wider text-muted-foreground uppercase opacity-70">
+					{tagline}
+				</p>
+			</div>
+		</div>
+		<Separator class="bg-linear-to-r from-primary/20 via-border to-transparent" />
+	</div>
+{/snippet}
 
 <div class="min-h-screen bg-background p-6 font-sans selection:bg-primary/20 md:p-12">
 	<header class="mb-12 space-y-8">
@@ -51,10 +124,9 @@
 		<Separator class="bg-linear-to-r from-primary/30 to-transparent" />
 	</header>
 
-	<div class="space-y-12">
+	<div id="projects" class="space-y-24">
 		<!-- Hero Section -->
-		{#if projects.length > 0}
-			{@const hero = projects[0]}
+		{#if hero}
 			<div
 				class="relative overflow-hidden rounded-2xl border border-primary/20 bg-card/60 p-8 shadow-2xl backdrop-blur-md transition-all hover:border-primary/40 md:p-12"
 			>
@@ -83,20 +155,100 @@
 						</div>
 						<a
 							href="/projects/{hero.id}"
-							class="inline-flex items-center text-sm font-semibold text-primary hover:underline"
+							class="group inline-flex items-center gap-2 text-sm font-semibold text-primary transition-all hover:gap-3"
 						>
-							View Mission Details &rarr;
+							View Mission Details <ArrowRight class="size-4" />
 						</a>
 					</div>
 				</div>
 			</div>
 		{/if}
 
-		<!-- Masonry-ish Grid / Data-Dense Layout (Starting from index 1) -->
-		<div class="grid auto-rows-min grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-			{#each projects.slice(1) as project (project.id)}
-				<ProjectCard {project} />
-			{/each}
+		<div class="space-y-24">
+			<!-- Featured Stacks -->
+			{#if featuredStacks.length > 0}
+				<section>
+					{@render sectionHeader('Featured Stacks', 'High-impact engineering modules', Sparkles, 'featured')}
+					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+						{#each featuredStacks as project (project.id)}
+							<ProjectCard {project} />
+						{/each}
+					</div>
+				</section>
+			{/if}
+
+			<!-- Groups -->
+			{#if groups.length > 0}
+				<section>
+					{@render sectionHeader('Groups', 'Multi-repo ecosystems & toolchains', Boxes, 'groups')}
+					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+						{#each groups as project (project.id)}
+							<ProjectCard {project} />
+						{/each}
+					</div>
+				</section>
+			{/if}
+
+			<!-- Experimental -->
+			{#if experimental.length > 0}
+				<section>
+					{@render sectionHeader('Experimental', 'Research, prototypes & early-stage builds', Beaker, 'experimental')}
+					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+						{#each experimental as project (project.id)}
+							<ProjectCard {project} />
+						{/each}
+					</div>
+				</section>
+			{/if}
+
+			<!-- General Registry -->
+			{#if generalRegistry.length > 0}
+				<section>
+					{@render sectionHeader('Project Registry', 'General purpose tools & utilities', Cpu, 'registry')}
+					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+						{#each generalRegistry as project (project.id)}
+							<ProjectCard {project} />
+						{/each}
+					</div>
+				</section>
+			{/if}
+
+			<!-- Platform Sections (Placeholders based on Footer) -->
+			<div class="grid grid-cols-1 gap-8 pt-12 lg:grid-cols-3">
+				<section id="about" class="group space-y-4 rounded-xl border border-slate-800 bg-card/30 p-6 backdrop-blur-sm transition-all hover:border-primary/30">
+					<div class="flex items-center gap-3 text-primary">
+						<Network class="size-5" />
+						<h3 class="font-bold tracking-tight uppercase">Architecture</h3>
+					</div>
+					<p class="text-sm text-muted-foreground leading-relaxed">
+						High-performance SvelteKit 5 architecture using ISR caching and a hybrid data layer for real-time repository analysis.
+					</p>
+				</section>
+
+				<section id="docs" class="group space-y-4 rounded-xl border border-slate-800 bg-card/30 p-6 backdrop-blur-sm transition-all hover:border-primary/30">
+					<div class="flex items-center gap-3 text-primary">
+						<BookOpen class="size-5" />
+						<h3 class="font-bold tracking-tight uppercase">Blueprint</h3>
+					</div>
+					<p class="text-sm text-muted-foreground leading-relaxed">
+						The Mechanical Artisan design system. Detailed technical specifications and implementation patterns for the Shipyard registry.
+					</p>
+				</section>
+
+				<section id="legal" class="group space-y-4 rounded-xl border border-slate-800 bg-card/30 p-6 backdrop-blur-sm transition-all hover:border-primary/30">
+					<div class="flex items-center gap-3 text-primary">
+						<Shield class="size-5" />
+						<h3 class="font-bold tracking-tight uppercase">System Status</h3>
+					</div>
+					<div class="flex items-center gap-2 text-xs font-mono text-emerald-500 bg-emerald-500/10 w-fit px-2 py-1 rounded">
+						<Activity class="size-3 animate-pulse" />
+						CORE MODULES ONLINE
+					</div>
+					<p class="text-sm text-muted-foreground leading-relaxed">
+						Continuous verification of GitHub API connectivity and build integrity across all registered project clusters.
+					</p>
+				</section>
+			</div>
 
 			<!-- Empty State if strict filter removes everything -->
 			{#if projects.length === 0}

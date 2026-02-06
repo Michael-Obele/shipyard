@@ -2,7 +2,8 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import type { DisplayProject } from '$lib/types';
-	import { Layers, FolderGit } from 'lucide-svelte';
+	import { Boxes, FolderGit, CalendarDays } from '@lucide/svelte';
+	import * as HoverCard from '$lib/components/ui/hover-card';
 
 	let { project }: { project: DisplayProject } = $props();
 
@@ -37,7 +38,7 @@
 				<div class="space-y-1">
 					<Badge
 						variant="outline"
-						class="w-fit border-primary/30 font-mono text-[10px] text-primary">CLUSTER</Badge
+						class="w-fit border-primary/30 font-mono text-[10px] text-primary">GROUP</Badge
 					>
 					<Card.Title class="text-xl font-bold tracking-tight">{project.name}</Card.Title>
 				</div>
@@ -52,14 +53,38 @@
 					<div
 						class="flex items-center gap-2 rounded-md bg-secondary/50 p-2 font-mono text-xs text-muted-foreground"
 					>
-						<Layers class="size-3.5" />
+						<Boxes class="size-3.5" />
 						<span>{project.repoCount} Modules Included</span>
 					</div>
 					<div class="flex flex-wrap gap-1.5">
 						{#if project.subProjects}
-							{#each project.subProjects.slice(0, 3) as sub}
-								<span class="inline-block size-1.5 rounded-full bg-primary/40"></span>
-								<span class="max-w-25 truncate text-[10px] text-muted-foreground">{sub.name}</span>
+							{#each project.subProjects.slice(0, 3) as sub (sub.name)}
+								<HoverCard.Root openDelay={200}>
+									<HoverCard.Trigger
+										class="flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/30 px-2 py-0.5 transition-colors hover:bg-secondary/80"
+									>
+										<span class="size-1.5 rounded-full bg-primary/40"></span>
+										<span class="max-w-25 truncate text-[10px] text-muted-foreground"
+											>{sub.name}</span
+										>
+									</HoverCard.Trigger>
+									<HoverCard.Content class="w-80">
+										<div class="flex justify-between space-x-4">
+											<div class="space-y-1">
+												<h4 class="text-sm font-semibold">@{sub.name}</h4>
+												<p class="text-sm">
+													{sub.description || 'No description provided.'}
+												</p>
+												<div class="flex items-center pt-2">
+													<CalendarDays class="mr-2 size-4 opacity-70" />
+													<span class="text-xs text-muted-foreground">
+														Updated {new Date(sub.updatedAt).toLocaleDateString()}
+													</span>
+												</div>
+											</div>
+										</div>
+									</HoverCard.Content>
+								</HoverCard.Root>
 							{/each}
 							{#if project.subProjects.length > 3}
 								<span class="pl-1 text-[10px] text-muted-foreground"

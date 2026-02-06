@@ -6,7 +6,10 @@ import type { DisplayProject, RepoData } from '$lib/types';
  * Determines the project type based on repository metadata
  */
 function detectProjectType(repo: RepoData): DisplayProject['projectType'] {
-	const topics = repo.repositoryTopics.nodes.map((n) => n.topic.name).join(' ').toLowerCase();
+	const topics = repo.repositoryTopics.nodes
+		.map((n) => n.topic.name)
+		.join(' ')
+		.toLowerCase();
 	const languages = repo.languages.edges.map((e) => e.node.name).map((n) => n.toLowerCase());
 	const description = (repo.description || '').toLowerCase();
 
@@ -137,6 +140,11 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 			languages: uniqueLangs,
 			isCluster: true,
 			featured: group.featured,
+			experimental:
+				group.experimental ||
+				topics.includes('experimental') ||
+				topics.includes('alpha') ||
+				topics.includes('beta'),
 			projectType: groupRepos.some((r) => detectProjectType(r) === 'app') ? 'app' : 'tool',
 			repoCount: groupRepos.length,
 			subProjects: groupRepos
@@ -174,6 +182,12 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 			languages: repo.languages.edges.map((e) => e.node),
 			isCluster: false,
 			featured: override?.featured || false,
+			experimental:
+				override?.experimental ||
+				repo.repositoryTopics.nodes.some(
+					(n) =>
+						n.topic.name === 'experimental' || n.topic.name === 'alpha' || n.topic.name === 'beta'
+				),
 			projectType: detectProjectType(repo)
 		});
 	}
