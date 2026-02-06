@@ -59,9 +59,7 @@
 						{#if project.subProjects}
 							{#each project.subProjects.slice(0, 3) as sub}
 								<span class="inline-block size-1.5 rounded-full bg-primary/40"></span>
-								<span class="max-w-[100px] truncate text-[10px] text-muted-foreground"
-									>{sub.name}</span
-								>
+								<span class="max-w-25 truncate text-[10px] text-muted-foreground">{sub.name}</span>
 							{/each}
 							{#if project.subProjects.length > 3}
 								<span class="pl-1 text-[10px] text-muted-foreground"

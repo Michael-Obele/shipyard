@@ -15,7 +15,7 @@
 	);
 </script>
 
-<a href={project.url} target="_blank" class="group block h-full">
+<a href="/projects/{project.id}" class="group block h-full">
 	<Card.Root
 		class="flex h-full flex-col border-border/60 transition-all duration-300 hover:border-primary/50 hover:bg-card/70 hover:shadow-lg"
 	>
@@ -35,7 +35,7 @@
 				{/if}
 			</div>
 		</Card.Header>
-		<Card.Content class="flex-grow">
+		<Card.Content class="grow">
 			<p class="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
 				{project.description || 'No description available.'}
 			</p>

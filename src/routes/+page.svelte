@@ -50,23 +50,63 @@
 		<Separator class="bg-gradient-to-r from-primary/30 to-transparent" />
 	</header>
 
-	<!-- Masonry-ish Grid / Data-Dense Layout -->
-	<div
-		class="grid auto-rows-min grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-4"
-	>
-		{#each data.projects as project (project.id)}
-			<ProjectCard {project} />
-		{/each}
-
-		<!-- Empty State if strict filter removes everything -->
-		{#if data.projects.length === 0}
+	<div class="space-y-12">
+		<!-- Hero Section -->
+		{#if data.projects.length > 0}
+			{@const hero = data.projects[0]}
 			<div
-				class="col-span-full space-y-4 rounded-xl border-2 border-dashed border-border/50 py-20 text-center"
+				class="relative overflow-hidden rounded-2xl border border-primary/20 bg-card/60 p-8 shadow-2xl backdrop-blur-md transition-all hover:border-primary/40 md:p-12"
 			>
-				<Terminal class="mx-auto size-10 text-muted-foreground" />
-				<h3 class="text-xl font-bold text-muted-foreground">No Active Modules Detected</h3>
-				<p class="text-muted-foreground/70">System filters are hiding older projects.</p>
+				<div
+					class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-background to-background"
+				></div>
+				<div class="grid gap-8 lg:grid-cols-2">
+					<div class="space-y-6">
+						<div class="space-y-2">
+							<Badge class="bg-primary text-primary-foreground hover:bg-primary/90"
+								>LATEST DEPLOYMENT</Badge
+							>
+							<h2
+								class="text-4xl font-black tracking-tighter text-foreground sm:text-5xl md:text-6xl"
+							>
+								{hero.name}
+							</h2>
+						</div>
+						<p class="max-w-xl text-lg text-muted-foreground selection:bg-primary/10">
+							{hero.description}
+						</p>
+						<div class="flex flex-wrap gap-2">
+							{#each hero.topics as topic}
+								<Badge variant="secondary" class="font-mono text-xs">{topic}</Badge>
+							{/each}
+						</div>
+						<a
+							href="/projects/{hero.id}"
+							class="inline-flex items-center text-sm font-semibold text-primary hover:underline"
+						>
+							View Mission Details &rarr;
+						</a>
+					</div>
+				</div>
 			</div>
 		{/if}
+
+		<!-- Masonry-ish Grid / Data-Dense Layout (Starting from index 1) -->
+		<div class="grid auto-rows-min grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+			{#each data.projects.slice(1) as project (project.id)}
+				<ProjectCard {project} />
+			{/each}
+
+			<!-- Empty State if strict filter removes everything -->
+			{#if data.projects.length === 0}
+				<div
+					class="col-span-full space-y-4 rounded-xl border-2 border-dashed border-border/50 py-20 text-center"
+				>
+					<Terminal class="mx-auto size-10 text-muted-foreground" />
+					<h3 class="text-xl font-bold text-muted-foreground">No Active Modules Detected</h3>
+					<p class="text-muted-foreground/70">System filters are hiding older projects.</p>
+				</div>
+			{/if}
+		</div>
 	</div>
 </div>
