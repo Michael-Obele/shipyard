@@ -12,6 +12,7 @@ status: in-progress
 Shipyard is not a generic portfolio; it is an engineering registry. We reject flat, "safe" design in favor of an aesthetic that celebrates the structure of software.
 
 ### Core Pillars
+
 1. **Structural Sincerity**: We don't hide borders or grids; we elevate them. Using `slate-800` borders and `primary/20` glows to create a "machined" feel.
 2. **Bento Logic**: Curation is reflected through size. High-impact projects (e.g., Cinder) occupy larger Bento cells, while utility tools are grouped in smaller, dense clusters.
 3. **Kinetic Weight**: Every user interaction should feel "heavy" and deliberate. Transitions use `ease-out` with subtle 102% scaling to simulate physical movement.
@@ -27,32 +28,32 @@ Apply these in your `app.css` to override the default Shadcn variables.
 
 ```css
 @layer base {
-  :root {
-    --background: 222 47% 11%;
-    --foreground: 213 31% 91%;
+	:root {
+		--background: 222 47% 11%;
+		--foreground: 213 31% 91%;
 
-    --card: 222 47% 12%;
-    --card-foreground: 213 31% 91%;
+		--card: 222 47% 12%;
+		--card-foreground: 213 31% 91%;
 
-    --popover: 222 47% 11%;
-    --popover-foreground: 213 31% 91%;
+		--popover: 222 47% 11%;
+		--popover-foreground: 213 31% 91%;
 
-    --primary: 243 75% 59%; /* Indigo 500 */
-    --primary-foreground: 210 40% 98%;
+		--primary: 243 75% 59%; /* Indigo 500 */
+		--primary-foreground: 210 40% 98%;
 
-    --secondary: 222 47% 16%;
-    --secondary-foreground: 210 40% 98%;
+		--secondary: 222 47% 16%;
+		--secondary-foreground: 210 40% 98%;
 
-    --muted: 223 47% 16%;
-    --muted-foreground: 215.4 16.3% 56.9%;
+		--muted: 223 47% 16%;
+		--muted-foreground: 215.4 16.3% 56.9%;
 
-    --accent: 216 34% 17%;
-    --accent-foreground: 210 40% 98%;
+		--accent: 216 34% 17%;
+		--accent-foreground: 210 40% 98%;
 
-    --border: 216 34% 17%;
-    --input: 216 34% 17%;
-    --ring: 243 75% 59%;
-  }
+		--border: 216 34% 17%;
+		--input: 216 34% 17%;
+		--ring: 243 75% 59%;
+	}
 }
 ```
 
@@ -62,11 +63,7 @@ Apply these in your `app.css` to override the default Shadcn variables.
 - **Card Glow:** Add a subtle radial gradient on hover:
   ```css
   .project-card:hover {
-    background: radial-gradient(
-      circle at top left,
-      hsla(var(--primary) / 0.15),
-      transparent 70%
-    );
+  	background: radial-gradient(circle at top left, hsla(var(--primary) / 0.15), transparent 70%);
   }
   ```
 - **Semantic Status Colors:**
@@ -90,14 +87,14 @@ We use **Bits UI** for interactive components. Bits UI handles the state and acc
 
 Using **Lucide Svelte**.
 
-| Intent     | Icon           | Import                                         |
-| :--------- | :------------- | :--------------------------------------------- |
-| Repository | `Box`          | `import { Box } from "lucide-svelte"`          |
-| Stars      | `Star`         | `import { Star } from "lucide-svelte"`         |
-| Fork       | `GitFork`      | `import { GitFork } from "lucide-svelte"`      |
-| Updates    | `Clock`        | `import { Clock } from "lucide-svelte"`        |
-| External   | `ExternalLink` | `import { ExternalLink } from "lucide-svelte"` |
-| System     | `Layers`       | `import { Layers } from "lucide-svelte"`       |
+| Intent     | Icon           | Import                                          |
+| :--------- | :------------- | :---------------------------------------------- |
+| Repository | `Box`          | `import { Box } from "@lucide/svelte"`          |
+| Stars      | `Star`         | `import { Star } from "@lucide/svelte"`         |
+| Fork       | `GitFork`      | `import { GitFork } from "@lucide/svelte"`      |
+| Updates    | `Clock`        | `import { Clock } from "@lucide/svelte"`        |
+| External   | `ExternalLink` | `import { ExternalLink } from "@lucide/svelte"` |
+| System     | `Layers`       | `import { Layers } from "@lucide/svelte"`       |
 
 ## Visual Language
 

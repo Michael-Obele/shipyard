@@ -21,23 +21,28 @@ bunx shadcn-svelte@latest init
 bunx shadcn-svelte@latest add card badge button input tabs separator
 
 # 4. Install Dependencies
-bun add lucide-svelte bits-ui js-yaml
+bun add @lucide/svelte bits-ui js-yaml
 bun add -D @types/js-yaml
 ```
 
 ## 2. Environment Setup
+
 Create a `.env` file:
+
 ```env
 GITHUB_TOKEN=your_pat_token_here
 ```
 
 ## 3. High-Value Tasks
+
 1.  **Repo Mirroring:** Ensure your `registry.yaml` lists `cinder`, `cinder-sv`, and `cinder-mcp` to test the clustering logic.
 2.  **Private Projects:** Add your "Client Logistics Dashboard" to the `manual` section of the YAML.
 3.  **Deployment:** Vercel is highly recommended for immediate GitHub sync and ISR support.
 
 ---
+
 ### Related Documents
+
 - [Index](./index.md)
 - [Engineering](./engineering.md)
 - [Design System](./design-system.md)
