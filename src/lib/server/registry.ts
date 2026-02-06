@@ -29,13 +29,15 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 		const latestUpdate = groupRepos.reduce((latest, r) => {
 			return new Date(r.updatedAt) > new Date(latest) ? r.updatedAt : latest;
 		}, groupRepos[0].updatedAt);
-        
-        // Merge topics and languages from all repos in group, deduplicated
-        const topics = Array.from(new Set(groupRepos.flatMap(r => r.repositoryTopics.nodes.map(n => n.topic.name))));
-        
-        // Simplified languages aggregation: just take top 3 distinct from all
-        const allLangs = groupRepos.flatMap(r => r.languages.edges.map(e => e.node));
-        const uniqueLangs = Array.from(new Map(allLangs.map(l => [l.name, l])).values()).slice(0, 3);
+
+		// Merge topics and languages from all repos in group, deduplicated
+		const topics = Array.from(
+			new Set(groupRepos.flatMap((r) => r.repositoryTopics.nodes.map((n) => n.topic.name)))
+		);
+
+		// Simplified languages aggregation: just take top 3 distinct from all
+		const allLangs = groupRepos.flatMap((r) => r.languages.edges.map((e) => e.node));
+		const uniqueLangs = Array.from(new Map(allLangs.map((l) => [l.name, l])).values()).slice(0, 3);
 
 		displayProjects.push({
 			id: group.id,
@@ -43,12 +45,21 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 			description: `Collection of ${groupRepos.length} repositories including ${group.repos.join(', ')}`,
 			stars: totalStars,
 			updatedAt: latestUpdate,
-			url: groupRepos[0].url, // Link to first repo or maybe a generic one needed
+			url: groupRepos[0].url,
 			topics: topics.slice(0, 5),
 			languages: uniqueLangs,
 			isCluster: true,
 			featured: group.featured,
-			repoCount: groupRepos.length
+			repoCount: groupRepos.length,
+			subProjects: groupRepos
+				.map((r) => ({
+					name: r.name,
+					description: r.description,
+					url: r.url,
+					updatedAt: r.updatedAt,
+					stars: r.stargazers.totalCount
+				}))
+				.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
 		});
 	}
 
@@ -57,9 +68,9 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 		if (processedRepos.has(repo.name)) continue;
 
 		const override = config.overrides?.[repo.name];
-		// Skip if not explicitly featured? The engineering md says "Fetches live stats... for everything". 
-        // But design-system mentions "Curation via size".
-        // Let's include everything but respect overrides.
+		// Skip if not explicitly featured? The engineering md says "Fetches live stats... for everything".
+		// But design-system mentions "Curation via size".
+		// Let's include everything but respect overrides.
 
 		displayProjects.push({
 			id: repo.name,
@@ -75,14 +86,18 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 		});
 	}
 
-    // Sort: Featured first, then by date or stars? 
-    // "High-impact projects occupy larger Bento cells".
-    // Let's sort by Featured then UpdatedAt
-    displayProjects.sort((a, b) => {
-        if (a.featured && !b.featured) return -1;
-        if (!a.featured && b.featured) return 1;
-        return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-    });
+	// 5. Filter & Sort
+	// Filter: Only projects updated since 2025-01-01
+	const CUTOFF_DATE = new Date('2025-01-01T00:00:00Z');
 
-	return displayProjects;
+	// Sort: Featured first, then by date.
+	const sortedProjects = displayProjects
+		.filter((p) => new Date(p.updatedAt) >= CUTOFF_DATE)
+		.sort((a, b) => {
+			if (a.featured && !b.featured) return -1;
+			if (!a.featured && b.featured) return 1;
+			return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+		});
+
+	return sortedProjects;
 }

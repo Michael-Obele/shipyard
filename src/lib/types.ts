@@ -37,4 +37,11 @@ export interface DisplayProject {
 	isCluster: boolean;
 	featured: boolean;
 	repoCount?: number;
+	subProjects?: {
+		name: string;
+		description: string | null;
+		url: string;
+		updatedAt: string;
+		stars: number;
+	}[];
 }
