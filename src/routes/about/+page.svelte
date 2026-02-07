@@ -583,7 +583,7 @@
 			</div>
 
 			<div class="mt-20 font-mono text-[9px] tracking-[0.5em] text-muted-foreground/30 uppercase">
-				Established MMXXIV // michael obele // shipyard v1.0
+				Established MMXXIV // michael obele // shipyard
 			</div>
 		</div>
 	</section>
