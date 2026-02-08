@@ -215,9 +215,9 @@
 							that didn't just store code, but demonstrated its purpose.
 						</p>
 						<p>
-							Shipyard is where my **Systems Thinking** (informed by my background in Network
-							Engineering) meets the **Intelligence Layer** of modern software. It is a living
-							inventory designed to transform chaos into logic.
+							Shipyard is where my <strong>Systems Thinking</strong> (informed by my background in
+							Network Engineering) meets the <strong>Intelligence Layer</strong> of modern software. It
+							is a living inventory designed to transform chaos into logic.
 						</p>
 					</div>
 					<div class="flex items-center gap-4 pt-4">
