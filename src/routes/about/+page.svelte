@@ -501,7 +501,7 @@
 										<div
 											class="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-slate-700 bg-background shadow-inner transition-colors group-hover:border-indigo-500/50"
 										>
-											<svelte:component this={tech.icon} class="size-5 text-foreground" />
+											<tech.icon class="size-5 text-foreground" />
 										</div>
 										<div>
 											<div class="text-lg font-bold tracking-tight">{tech.name}</div>
@@ -516,7 +516,7 @@
 								<HoverCard.Content class="w-64 border-slate-800 bg-card/95 backdrop-blur-md">
 									<div class="flex flex-col gap-2">
 										<div class="flex items-center gap-2">
-											<svelte:component this={tech.icon} class="size-4 text-indigo-400" />
+											<tech.icon class="size-4 text-indigo-400" />
 											<span class="text-sm font-bold tracking-tight">{tech.name}</span>
 										</div>
 										<Separator class="bg-slate-800/50" />
