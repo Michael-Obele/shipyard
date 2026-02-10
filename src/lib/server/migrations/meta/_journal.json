@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1770714165903,
+      "tag": "0000_redundant_the_enforcers",
+      "breakpoints": true
+    }
+  ]
+}
