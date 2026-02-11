@@ -102,7 +102,7 @@
 												<div
 													class="flex items-center gap-1 font-mono text-xs text-muted-foreground"
 												>
-													<span>★</span>
+													<Star class="size-3" />
 													<span>{sub.stars}</span>
 												</div>
 											{/if}
