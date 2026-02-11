@@ -6,10 +6,20 @@ import { getRegistry } from '$lib/server/registry';
  * This replaces the server-side load function with a query remote function for better performance.
  */
 export const getProjects = query(async () => {
-	let projects = await getRegistry();
+	console.log('[Remote:getProjects] Fetching registry data...');
+	try {
+		const projects = await getRegistry();
+		console.log(`[Remote:getProjects] Received ${projects.length} total projects from registry`);
 
-	// STRICT FILTER: Only show projects updated in 2025 or later
-	projects = projects.filter((p) => new Date(p.updatedAt) >= new Date('2025-01-01'));
+		// STRICT FILTER: Only show projects updated in 2025 or later
+		const filtered = projects.filter((p) => new Date(p.updatedAt) >= new Date('2025-01-01'));
+		console.log(
+			`[Remote:getProjects] Returning ${filtered.length} projects after 2025-01-01 filter`
+		);
 
-	return projects;
+		return filtered;
+	} catch (error) {
+		console.error('[Remote:getProjects] Error in remote function:', error);
+		throw error;
+	}
 });

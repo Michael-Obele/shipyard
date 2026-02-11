@@ -18,47 +18,68 @@
 	} from '@lucide/svelte';
 	import { getProjects } from '$lib/remote/projects.remote';
 
-	const projects = $derived(await getProjects());
+	let { data } = $props();
+
+	// Initialize with SSR data to prevent flicker, but allow refresh
+	let projects = $state<any[]>(data.projects || []);
+	let isLoading = $state(false);
+
+	$effect(() => {
+		// Keep projects in sync with server data if it changes (e.g. navigation)
+		if (data.projects) {
+			projects = data.projects;
+		}
+
+		console.log('[Homepage] Data session stats:', projects.length, 'modules active');
+
+		// If projects are still empty (shouldn't happen with SSR but safe check)
+		if (projects.length === 0) {
+			console.log('[Homepage] No projects found, performing late refresh...');
+			getProjects().then((p) => {
+				projects = p;
+			});
+		}
+	});
 
 	const hero = $derived(projects.length > 0 ? projects[0] : null);
 
 	const featuredStacks = $derived(
-		projects
-			.slice(1)
-			.filter((p) => p.featured && !p.isCluster && !p.experimental)
+		projects.slice(1).filter((p) => p.featured && !p.isCluster && !p.experimental)
 	);
 
-	const groups = $derived(
-		projects
-			.slice(1)
-			.filter((p) => p.isCluster && !p.experimental)
-	);
+	const groups = $derived(projects.slice(1).filter((p) => p.isCluster && !p.experimental));
 
-	const experimental = $derived(
-		projects
-			.slice(1)
-			.filter((p) => p.experimental)
-	);
+	const experimental = $derived(projects.slice(1).filter((p) => p.experimental));
 
 	const generalRegistry = $derived(
-		projects
-			.slice(1)
-			.filter((p) => !p.featured && !p.isCluster && !p.experimental)
+		projects.slice(1).filter((p) => !p.featured && !p.isCluster && !p.experimental)
 	);
 </script>
 
 <svelte:head>
 	<title>Shipyard - Project Registry</title>
-	<meta name="description" content="Discover curated open-source projects and developer tools. A Mechanical Artisan registry showcasing innovative software solutions, frameworks, and applications." />
-	<meta name="keywords" content="open source, projects, developer tools, software registry, frameworks, applications" />
+	<meta
+		name="description"
+		content="Discover curated open-source projects and developer tools. A Mechanical Artisan registry showcasing innovative software solutions, frameworks, and applications."
+	/>
+	<meta
+		name="keywords"
+		content="open source, projects, developer tools, software registry, frameworks, applications"
+	/>
 	<link rel="canonical" href="https://shipyard.registry/" />
 	<meta property="og:title" content="Shipyard - Project Registry" />
-	<meta property="og:description" content="Discover curated open-source projects and developer tools. A Mechanical Artisan registry showcasing innovative software solutions." />
+	<meta
+		property="og:description"
+		content="Discover curated open-source projects and developer tools. A Mechanical Artisan registry showcasing innovative software solutions."
+	/>
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://shipyard.registry/" />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content="Shipyard - Project Registry" />
-	<meta name="twitter:description" content="Discover curated open-source projects and developer tools." />
+	<meta
+		name="twitter:description"
+		content="Discover curated open-source projects and developer tools."
+	/>
 </svelte:head>
 
 {#snippet sectionHeader(title: string, tagline: string, icon: any, id: string)}
@@ -168,7 +189,12 @@
 			<!-- Featured Stacks -->
 			{#if featuredStacks.length > 0}
 				<section>
-					{@render sectionHeader('Featured Stacks', 'High-impact engineering modules', Sparkles, 'featured')}
+					{@render sectionHeader(
+						'Featured Stacks',
+						'High-impact engineering modules',
+						Sparkles,
+						'featured'
+					)}
 					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 						{#each featuredStacks as project (project.id)}
 							<ProjectCard {project} />
@@ -192,7 +218,12 @@
 			<!-- Experimental -->
 			{#if experimental.length > 0}
 				<section>
-					{@render sectionHeader('Experimental', 'Research, prototypes & early-stage builds', Beaker, 'experimental')}
+					{@render sectionHeader(
+						'Experimental',
+						'Research, prototypes & early-stage builds',
+						Beaker,
+						'experimental'
+					)}
 					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 						{#each experimental as project (project.id)}
 							<ProjectCard {project} />
@@ -204,7 +235,12 @@
 			<!-- General Registry -->
 			{#if generalRegistry.length > 0}
 				<section>
-					{@render sectionHeader('Project Registry', 'General purpose tools & utilities', Cpu, 'registry')}
+					{@render sectionHeader(
+						'Project Registry',
+						'General purpose tools & utilities',
+						Cpu,
+						'registry'
+					)}
 					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
 						{#each generalRegistry as project (project.id)}
 							<ProjectCard {project} />
@@ -215,37 +251,51 @@
 
 			<!-- Platform Sections (Placeholders based on Footer) -->
 			<div class="grid grid-cols-1 gap-8 pt-12 lg:grid-cols-3">
-				<section id="about" class="group space-y-4 rounded-xl border border-slate-800 bg-card/30 p-6 backdrop-blur-sm transition-all hover:border-primary/30">
+				<section
+					id="about"
+					class="group space-y-4 rounded-xl border border-slate-800 bg-card/30 p-6 backdrop-blur-sm transition-all hover:border-primary/30"
+				>
 					<div class="flex items-center gap-3 text-primary">
 						<Network class="size-5" />
 						<h3 class="font-bold tracking-tight uppercase">Architecture</h3>
 					</div>
-					<p class="text-sm text-muted-foreground leading-relaxed">
-						High-performance SvelteKit 5 architecture using ISR caching and a hybrid data layer for real-time repository analysis.
+					<p class="text-sm leading-relaxed text-muted-foreground">
+						High-performance SvelteKit 5 architecture using ISR caching and a hybrid data layer for
+						real-time repository analysis.
 					</p>
 				</section>
 
-				<section id="docs" class="group space-y-4 rounded-xl border border-slate-800 bg-card/30 p-6 backdrop-blur-sm transition-all hover:border-primary/30">
+				<section
+					id="docs"
+					class="group space-y-4 rounded-xl border border-slate-800 bg-card/30 p-6 backdrop-blur-sm transition-all hover:border-primary/30"
+				>
 					<div class="flex items-center gap-3 text-primary">
 						<BookOpen class="size-5" />
 						<h3 class="font-bold tracking-tight uppercase">Blueprint</h3>
 					</div>
-					<p class="text-sm text-muted-foreground leading-relaxed">
-						The Mechanical Artisan design system. Detailed technical specifications and implementation patterns for the Shipyard registry.
+					<p class="text-sm leading-relaxed text-muted-foreground">
+						The Mechanical Artisan design system. Detailed technical specifications and
+						implementation patterns for the Shipyard registry.
 					</p>
 				</section>
 
-				<section id="legal" class="group space-y-4 rounded-xl border border-slate-800 bg-card/30 p-6 backdrop-blur-sm transition-all hover:border-primary/30">
+				<section
+					id="legal"
+					class="group space-y-4 rounded-xl border border-slate-800 bg-card/30 p-6 backdrop-blur-sm transition-all hover:border-primary/30"
+				>
 					<div class="flex items-center gap-3 text-primary">
 						<Shield class="size-5" />
 						<h3 class="font-bold tracking-tight uppercase">System Status</h3>
 					</div>
-					<div class="flex items-center gap-2 text-xs font-mono text-emerald-500 bg-emerald-500/10 w-fit px-2 py-1 rounded">
+					<div
+						class="flex w-fit items-center gap-2 rounded bg-emerald-500/10 px-2 py-1 font-mono text-xs text-emerald-500"
+					>
 						<Activity class="size-3 animate-pulse" />
 						CORE MODULES ONLINE
 					</div>
-					<p class="text-sm text-muted-foreground leading-relaxed">
-						Continuous verification of GitHub API connectivity and build integrity across all registered project clusters.
+					<p class="text-sm leading-relaxed text-muted-foreground">
+						Continuous verification of GitHub API connectivity and build integrity across all
+						registered project clusters.
 					</p>
 				</section>
 			</div>

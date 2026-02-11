@@ -1,6 +1,16 @@
 import { fetchRepositories } from './github';
 import { registryConfig } from './registry-config';
 import type { DisplayProject, RepoData } from '$lib/types';
+import {
+	getCachedRepositories,
+	shouldRefreshCluster,
+	setCachedRepositories,
+	startCacheRefresh,
+	recordCacheError,
+	getStaleDataFallback
+} from './cache-manager';
+
+const REGISTRY_CACHE_KEY = '__system_registry__';
 
 /**
  * Determines the project type based on repository metadata
@@ -93,12 +103,50 @@ function detectProjectType(repo: RepoData): DisplayProject['projectType'] {
 }
 
 export async function getRegistry(): Promise<DisplayProject[]> {
+	console.log(`[Registry] getRegistry called. Checking cache...`);
 	// 1. Load Registry Config
 	const config = registryConfig;
 
-	// 2. Fetch GitHub Data
-	const repos = await fetchRepositories();
-	const repoMap = new Map<string, RepoData>(repos.map((r) => [r.name, r]));
+	// 2. Fetch GitHub Data with Caching
+	let repos: RepoData[] | null = null;
+	const needsRefresh = await shouldRefreshCluster(REGISTRY_CACHE_KEY);
+
+	if (!needsRefresh) {
+		console.log(`[Registry] Cache hit for ${REGISTRY_CACHE_KEY}`);
+		const cached = await getCachedRepositories(REGISTRY_CACHE_KEY);
+		repos = cached as RepoData[] | null;
+	}
+
+	if (!repos || needsRefresh) {
+		console.log(
+			`[Registry] Cache miss or stale for ${REGISTRY_CACHE_KEY}. Fetching from GitHub...`
+		);
+		try {
+			await startCacheRefresh(REGISTRY_CACHE_KEY);
+			repos = await fetchRepositories();
+			console.log(`[Registry] GitHub returned ${repos.length} raw repos`);
+			await setCachedRepositories(REGISTRY_CACHE_KEY, repos as any);
+			console.log(`[Registry] Successfully cached ${repos.length} repos`);
+		} catch (error) {
+			console.error(`[Registry] Failed to fetch repositories:`, error);
+			const staleData = await getStaleDataFallback(REGISTRY_CACHE_KEY);
+			if (staleData) {
+				console.log(`[Registry] Falling back to stale data`);
+				repos = staleData as RepoData[];
+			} else {
+				repos = [];
+			}
+			await recordCacheError(
+				REGISTRY_CACHE_KEY,
+				error instanceof Error ? error : new Error(String(error))
+			);
+		}
+	}
+
+	// Ensure repos is not null even if everything failed
+	const finalRepos: RepoData[] = repos || [];
+
+	const repoMap = new Map<string, RepoData>(finalRepos.map((r) => [r.name, r]));
 
 	const displayProjects: DisplayProject[] = [];
 	const processedRepos = new Set<string>();
@@ -160,16 +208,13 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 	}
 
 	// 4. Process Individual Repos
-	for (const repo of repos) {
+	for (const repo of finalRepos) {
 		// Skip forks - only show original projects
 		if (repo.isFork) continue;
 
 		if (processedRepos.has(repo.name)) continue;
 
 		const override = config.overrides?.[repo.name];
-		// Skip if not explicitly featured? The engineering md says "Fetches live stats... for everything".
-		// But design-system mentions "Curation via size".
-		// Let's include everything but respect overrides.
 
 		displayProjects.push({
 			id: repo.name,
@@ -193,10 +238,8 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 	}
 
 	// 5. Filter & Sort
-	// Filter: Only projects updated since 2025-01-01
 	const CUTOFF_DATE = new Date('2025-01-01T00:00:00Z');
 
-	// Sort: Featured first, then by date.
 	const sortedProjects = displayProjects
 		.filter((p) => new Date(p.updatedAt) >= CUTOFF_DATE)
 		.sort((a, b) => {

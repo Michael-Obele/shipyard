@@ -1,22 +1,16 @@
 /**
- * Database connection singleton for Drizzle ORM
+ * Database connection singleton for Prisma ORM
  * Handles connection pooling and lifecycle management
- * Uses Neon's serverless HTTP driver for optimal performance
  */
 
-import { drizzle } from 'drizzle-orm/neon-http';
-import { neon } from '@neondatabase/serverless';
-import * as schema from './drizzle';
+import { PrismaClient } from '@prisma/client';
 
 if (!process.env.DATABASE_URL) {
 	throw new Error('❌ DATABASE_URL environment variable is not set');
 }
 
-// Initialize Neon serverless driver for PostgreSQL
-const sql = neon(process.env.DATABASE_URL);
-
-// Create singleton Drizzle instance with schema
-const db = drizzle(sql, { schema });
+// Create singleton Prisma instance
+const db = new PrismaClient();
 
 /**
  * Export the database instance for use throughout the app
@@ -26,7 +20,7 @@ const db = drizzle(sql, { schema });
  * ```ts
  * import { db } from '$lib/server/db';
  *
- * const repos = await db.select().from(repositoryCache).where(...);
+ * const clusters = await db.cluster.findMany();
  * ```
  */
 export { db };

@@ -9,7 +9,7 @@
 		CardTitle
 	} from '$lib/components/ui/card';
 	import { Github, GitBranch, Star, AlertCircle, Loader2 } from '@lucide/svelte';
-	import type { RepoData } from '$lib/server/cache-manager';
+	import type { RepoData } from '$lib/types';
 
 	interface Props {
 		clusterName: string;

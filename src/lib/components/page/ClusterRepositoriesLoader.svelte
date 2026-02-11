@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
 	import RepositoriesSection from './RepositoriesSection.svelte';
 	import { getRepositoriesByClusterRemote } from '$lib/remote/repositories.remote';
 
@@ -11,9 +10,8 @@
 
 	const { clusterName, title, description } = $props();
 
-	// Trigger async data fetching
-	// Use untrack to avoid re-running when clusterName changes
-	const reposPromise = untrack(() => getRepositoriesByClusterRemote(clusterName));
+	// Make the async data fetching reactive to clusterName changes
+	const reposPromise = $derived.by(async () => await getRepositoriesByClusterRemote(clusterName));
 </script>
 
 {#await reposPromise}

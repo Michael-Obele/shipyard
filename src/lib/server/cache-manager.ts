@@ -9,9 +9,8 @@
  */
 
 import { db } from './db';
-import { RepositoryCache, RefreshLog } from './drizzle';
-import { eq } from 'drizzle-orm';
-import { sql } from 'drizzle-orm';
+import type { RepoData } from '$lib/types';
+import type { Prisma } from '@prisma/client';
 
 // TTL in hours - configurable per environment
 const CACHE_TTL_HOURS = parseInt(process.env.REPO_CACHE_TTL ?? '6');
@@ -19,22 +18,6 @@ const ACTIVE_DEV_TTL_HOURS = parseInt(process.env.REPO_CACHE_ACTIVE_TTL ?? '2');
 
 // Consider cache error-state after this many failures
 const ERROR_THRESHOLD = 3;
-
-/**
- * Repository data structure from GitHub GraphQL
- */
-export interface RepoData {
-	id: string;
-	name: string;
-	url: string;
-	description: string | null;
-	stars: number;
-	language: string | null;
-	topics: string[];
-	updatedAt: string;
-	color?: string;
-	[key: string]: unknown;
-}
 
 /**
  * Cache options for retrieval
@@ -51,19 +34,15 @@ export interface CacheOptions {
  */
 export async function getCachedRepositories(clusterName: string): Promise<RepoData[] | null> {
 	try {
-		const cache = await db
-			.select()
-			.from(RepositoryCache)
-			.where(eq(RepositoryCache.clusterName, clusterName))
-			.limit(1);
+		const cache = await db.cluster.findUnique({
+			where: { name: clusterName }
+		});
 
-		if (!cache.length) return null;
-
-		const record = cache[0];
+		if (!cache) return null;
 
 		// Return cached data regardless of expiration status
 		// (Caller decides whether to trigger refresh)
-		return (record.rawData as RepoData[]) || null;
+		return (cache.data as unknown as RepoData[]) || null;
 	} catch (error) {
 		console.error(`[Cache] Error fetching for ${clusterName}:`, error);
 		return null;
@@ -84,35 +63,31 @@ export async function shouldRefreshCluster(
 	ttlHours?: number
 ): Promise<boolean> {
 	try {
-		const cache = await db
-			.select()
-			.from(RepositoryCache)
-			.where(eq(RepositoryCache.clusterName, clusterName))
-			.limit(1);
+		const cache = await db.cluster.findUnique({
+			where: { name: clusterName }
+		});
 
 		// No cache = definitely need refresh
-		if (!cache.length) {
+		if (!cache) {
 			console.log(`[Cache] No cache found for ${clusterName}, needs refresh`);
 			return true;
 		}
 
-		const record = cache[0];
-
 		// If already refreshing, prevent thundering herd
-		if (record.status === 'refreshing') {
+		if (cache.status === 'refreshing') {
 			console.log(`[Cache] ${clusterName} already refreshing, skipping`);
 			return false;
 		}
 
 		// If in error state, don't refresh yet (exponential backoff would go here)
-		if (record.status === 'error' && record.errorCount! >= ERROR_THRESHOLD) {
-			console.log(`[Cache] ${clusterName} in error state (${record.errorCount} errors), skipping`);
+		if (cache.status === 'error' && cache.errorCount >= ERROR_THRESHOLD) {
+			console.log(`[Cache] ${clusterName} in error state (${cache.errorCount} errors), skipping`);
 			return false;
 		}
 
 		// Calculate hours since fetch
 		const now = new Date();
-		const hoursSinceFetch = (now.getTime() - record.fetchedAt.getTime()) / (1000 * 60 * 60);
+		const hoursSinceFetch = (now.getTime() - cache.fetchedAt.getTime()) / (1000 * 60 * 60);
 
 		// Use provided TTL or default
 		const effectiveTTL = ttlHours ?? CACHE_TTL_HOURS;
@@ -147,33 +122,29 @@ export async function setCachedRepositories(
 	const expiresAt = new Date(now.getTime() + ttlMs);
 
 	try {
-		// Upsert: insert if not exists, update if exists
-		await db
-			.insert(RepositoryCache)
-			.values({
-				clusterName,
+		await db.cluster.upsert({
+			where: { name: clusterName },
+			update: {
 				repoNames: repos.map((r) => r.name),
-				rawData: repos,
+				data: repos as any,
 				fetchedAt: now,
 				expiresAt,
 				status: 'ok',
 				errorCount: 0,
 				lastError: null,
 				updatedAt: now
-			})
-			.onConflictDoUpdate({
-				target: RepositoryCache.clusterName,
-				set: {
-					repoNames: repos.map((r) => r.name),
-					rawData: repos,
-					fetchedAt: now,
-					expiresAt,
-					status: 'ok',
-					errorCount: 0,
-					lastError: null,
-					updatedAt: now
-				}
-			});
+			},
+			create: {
+				name: clusterName,
+				repoNames: repos.map((r) => r.name),
+				data: repos as any,
+				fetchedAt: now,
+				expiresAt,
+				status: 'ok',
+				errorCount: 0,
+				lastError: null
+			}
+		});
 
 		console.log(
 			`[Cache] Stored ${repos.length} repos for ${clusterName}, expires at ${expiresAt.toISOString()}`
@@ -190,10 +161,10 @@ export async function setCachedRepositories(
  */
 export async function startCacheRefresh(clusterName: string): Promise<void> {
 	try {
-		await db
-			.update(RepositoryCache)
-			.set({ status: 'refreshing' })
-			.where(eq(RepositoryCache.clusterName, clusterName));
+		await db.cluster.update({
+			where: { name: clusterName },
+			data: { status: 'refreshing' }
+		});
 
 		console.log(`[Cache] Marked ${clusterName} as refreshing`);
 	} catch (error) {
@@ -215,19 +186,18 @@ export async function completeCacheRefresh(
 	const expiresAt = new Date(now.getTime() + ttlMs);
 
 	try {
-		await db
-			.update(RepositoryCache)
-			.set({
-				rawData: repos,
+		await db.cluster.update({
+			where: { name: clusterName },
+			data: {
+				data: repos as any,
 				repoNames: repos.map((r) => r.name),
 				fetchedAt: now,
 				expiresAt,
 				status: 'ok',
 				errorCount: 0,
-				lastError: null,
-				updatedAt: now
-			})
-			.where(eq(RepositoryCache.clusterName, clusterName));
+				lastError: null
+			}
+		});
 
 		console.log(`[Cache] Completed refresh for ${clusterName} with ${repos.length} repos`);
 	} catch (error) {
@@ -241,26 +211,23 @@ export async function completeCacheRefresh(
  */
 export async function recordCacheError(clusterName: string, error: Error): Promise<void> {
 	try {
-		const cache = await db
-			.select()
-			.from(RepositoryCache)
-			.where(eq(RepositoryCache.clusterName, clusterName))
-			.limit(1);
+		const cache = await db.cluster.findUnique({
+			where: { name: clusterName }
+		});
 
-		if (!cache.length) return;
+		if (!cache) return;
 
-		const newErrorCount = (cache[0].errorCount ?? 0) + 1;
+		const newErrorCount = (cache.errorCount ?? 0) + 1;
 		const newStatus = newErrorCount >= ERROR_THRESHOLD ? 'error' : 'refreshing';
 
-		await db
-			.update(RepositoryCache)
-			.set({
+		await db.cluster.update({
+			where: { name: clusterName },
+			data: {
 				status: newStatus,
 				lastError: error.message,
-				errorCount: newErrorCount,
-				updatedAt: new Date()
-			})
-			.where(eq(RepositoryCache.clusterName, clusterName));
+				errorCount: newErrorCount
+			}
+		});
 
 		console.error(
 			`[Cache] Recorded error for ${clusterName} (count: ${newErrorCount}): ${error.message}`
@@ -277,21 +244,18 @@ export async function recordCacheError(clusterName: string, error: Error): Promi
  */
 export async function getStaleDataFallback(clusterName: string): Promise<RepoData[] | null> {
 	try {
-		const cache = await db
-			.select()
-			.from(RepositoryCache)
-			.where(eq(RepositoryCache.clusterName, clusterName))
-			.limit(1);
+		const cache = await db.cluster.findUnique({
+			where: { name: clusterName }
+		});
 
-		if (!cache.length) return null;
+		if (!cache) return null;
 
-		const record = cache[0];
-		const hoursSinceFetch = (new Date().getTime() - record.fetchedAt.getTime()) / (1000 * 60 * 60);
+		const hoursSinceFetch = (new Date().getTime() - cache.fetchedAt.getTime()) / (1000 * 60 * 60);
 
 		console.log(
 			`[Cache] Returning stale fallback for ${clusterName} (${hoursSinceFetch.toFixed(2)}h old)`
 		);
-		return (record.rawData as RepoData[]) || null;
+		return (cache.data as unknown as RepoData[]) || null;
 	} catch (error) {
 		console.error(`[Cache] Error getting stale fallback for ${clusterName}:`, error);
 		return null;
@@ -306,20 +270,20 @@ export async function invalidateCache(clusterName?: string): Promise<void> {
 	try {
 		if (clusterName) {
 			// Invalidate specific cluster
-			await db
-				.update(RepositoryCache)
-				.set({
-					fetchedAt: sql`now() - interval '24 hours'`,
-					updatedAt: new Date()
-				})
-				.where(eq(RepositoryCache.clusterName, clusterName));
+			await db.cluster.update({
+				where: { name: clusterName },
+				data: {
+					fetchedAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
+				}
+			});
 
 			console.log(`[Cache] Invalidated cache for ${clusterName}`);
 		} else {
 			// Invalidate all caches
-			await db.update(RepositoryCache).set({
-				fetchedAt: sql`now() - interval '24 hours'`,
-				updatedAt: new Date()
+			await db.cluster.updateMany({
+				data: {
+					fetchedAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
+				}
 			});
 
 			console.log(`[Cache] Invalidated all caches`);
@@ -343,56 +307,14 @@ export async function logRefreshAttempt(
 		durationMs?: number;
 	}
 ): Promise<void> {
-	try {
-		const insertData: Record<string, any> = {
-			clusterName,
-			repositoryCacheId: 'unknown', // TODO: pass actual cache id
-			status: 'completed',
-			outcome,
-			itemsAttempted: data.repoCount ?? 0, // Provide a default if undefined
-			apiRequestsUsed: 0, // TODO: track API usage
-			retryAttempt: 0
-		};
-
-		// Conditionally add optional fields only if defined
-		if (data.repoCount !== undefined) {
-			insertData.repoCount = data.repoCount;
-		}
-		if (data.errorMessage !== undefined) {
-			insertData.errorMessage = data.errorMessage;
-		}
-		if (data.rateLimitRemaining !== undefined) {
-			insertData.rateLimitRemaining = data.rateLimitRemaining;
-		}
-		if (data.rateLimitReset !== undefined) {
-			insertData.rateLimitReset = data.rateLimitReset;
-		}
-		if (data.durationMs !== undefined) {
-			insertData.durationMs = data.durationMs;
-		}
-
-		await db.insert(RefreshLog).values(insertData as any);
-	} catch (error) {
-		console.error(`[Cache] Error logging refresh attempt:`, error);
-	}
+	// Simplified: just log to console or optionally update cluster status
+	console.log(`[Refresh Log] ${clusterName} ${outcome}:`, data);
 }
 
 /**
  * Get recent refresh history for debugging
  */
-export async function getRefreshHistory(
-	clusterName: string,
-	limit: number = 10
-): Promise<(typeof RefreshLog.$inferSelect)[]> {
-	try {
-		return await db
-			.select()
-			.from(RefreshLog)
-			.where(eq(RefreshLog.clusterName, clusterName))
-			.orderBy(sql`attempted_at DESC`)
-			.limit(limit);
-	} catch (error) {
-		console.error(`[Cache] Error fetching refresh history:`, error);
-		return [];
-	}
+export async function getRefreshHistory(clusterName: string, limit: number = 10): Promise<any[]> {
+	// Simplified: no history table anymore
+	return [];
 }

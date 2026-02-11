@@ -16,9 +16,9 @@ import {
 	startCacheRefresh,
 	recordCacheError,
 	getStaleDataFallback,
-	logRefreshAttempt,
-	type RepoData
+	logRefreshAttempt
 } from './cache-manager';
+import type { RepoData } from '$lib/types';
 import { registryConfig } from './registry-config';
 
 const GITHUB_API_URL = 'https://api.github.com/graphql';
@@ -147,11 +147,24 @@ async function fetchClusterFromGitHub(
 					name: ghRepo.name,
 					url: ghRepo.url,
 					description: ghRepo.description,
-					stars: ghRepo.stargazerCount,
-					language: ghRepo.languages?.nodes?.[0]?.name || null,
-					color: ghRepo.languages?.nodes?.[0]?.color,
-					topics: ghRepo.repositoryTopics?.nodes?.map((t) => t.topic.name) || [],
-					updatedAt: ghRepo.updatedAt
+					isFork: false, // Default for batch fetcher
+					stargazers: {
+						totalCount: ghRepo.stargazerCount
+					},
+					updatedAt: ghRepo.updatedAt,
+					languages: {
+						edges:
+							ghRepo.languages?.nodes?.map((n: any) => ({
+								size: 0,
+								node: { name: n.name, color: n.color }
+							})) || []
+					},
+					repositoryTopics: {
+						nodes:
+							ghRepo.repositoryTopics?.nodes?.map((t: any) => ({
+								topic: { name: t.topic.name }
+							})) || []
+					}
 				});
 			}
 		});
