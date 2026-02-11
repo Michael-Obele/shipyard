@@ -1,208 +1,147 @@
 <script lang="ts">
-	import {
-		Github,
-		Twitter,
-		Anchor,
-		Cpu,
-		Shield,
-		Globe,
-		Terminal,
-		Activity,
-		Hash,
-		Layers
-	} from '@lucide/svelte';
-	import { Separator } from '$lib/components/ui/separator';
-	import * as HoverCard from '$lib/components/ui/hover-card';
+	import { Github, Twitter, Anchor, FileText, Radar, Radio } from 'lucide-svelte';
 </script>
 
-<footer class="mt-24 border-t border-slate-800 bg-card/30 py-16 backdrop-blur-md">
+<footer class="mt-24 border-t border-border bg-background/80 py-16 backdrop-blur-xl">
 	<div class="container mx-auto max-w-7xl px-4">
 		<!-- Footer Content -->
 		<div class="grid grid-cols-1 gap-12 md:grid-cols-4 lg:grid-cols-5">
 			<!-- Brand Section -->
 			<div class="space-y-6 md:col-span-2 lg:col-span-2">
-				<div class="flex items-center gap-2">
+				<div class="flex items-center gap-3">
 					<div
-						class="flex size-10 items-center justify-center rounded-lg border border-slate-800 bg-primary/10"
+						class="flex size-10 items-center justify-center rounded-lg border border-border bg-card shadow-[0_0_15px_rgba(var(--primary),0.1)]"
 					>
-						<Anchor class="size-6 text-primary" />
+						<Anchor class="size-5 text-primary" />
 					</div>
-					<h3 class="text-2xl font-bold tracking-tighter text-primary">SHIPYARD</h3>
+					<div>
+						<h3 class="font-mono text-lg font-bold tracking-tighter text-foreground">SHIPYARD</h3>
+						<div
+							class="flex items-center gap-2 text-[10px] font-medium tracking-widest text-muted-foreground uppercase"
+						>
+							<span>Naval Registry</span>
+							<span class="size-1 rounded-full bg-primary"></span>
+							<span>MCC-v2.0</span>
+						</div>
+					</div>
 				</div>
 				<p class="max-w-xs text-sm leading-relaxed text-muted-foreground">
-					The mechanical artisan engineering registry. A unified ecosystem for high-performance
-					project showcasing and technical x-ray analysis.
+					The mechanical artisan engineering registry. A unified dry dock for high-performance
+					vessels and technical x-ray analysis.
 				</p>
-				<div class="flex gap-4">
+				<div class="flex gap-3">
 					<a
 						href="https://github.com"
 						target="_blank"
 						rel="noreferrer"
-						class="flex size-10 items-center justify-center rounded-md border border-slate-800 bg-secondary/50 transition-all hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+						class="group flex size-9 items-center justify-center rounded-md border border-border bg-secondary/50 transition-all hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
 						aria-label="GitHub"
 					>
-						<Github class="size-5" />
+						<Github class="size-4 transition-transform group-hover:scale-110" />
 					</a>
 					<a
 						href="https://twitter.com"
 						target="_blank"
 						rel="noreferrer"
-						class="flex size-10 items-center justify-center rounded-md border border-slate-800 bg-secondary/50 transition-all hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
+						class="group flex size-9 items-center justify-center rounded-md border border-border bg-secondary/50 transition-all hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
 						aria-label="Twitter"
 					>
-						<Twitter class="size-5" />
+						<Twitter class="size-4 transition-transform group-hover:scale-110" />
 					</a>
 				</div>
 			</div>
 
-			<!-- Registry -->
-			<div class="space-y-4">
+			<!-- Manifest (Registry) -->
+			<div class="cursor-default space-y-6">
 				<h4
-					class="flex items-center gap-2 text-sm font-bold tracking-widest text-foreground uppercase"
+					class="flex items-center gap-2 text-xs font-bold tracking-[0.2em] text-foreground uppercase"
 				>
-					<Cpu class="size-4 text-primary" />
-					Registry
+					<FileText class="size-3.5 text-primary" />
+					MANIFEST
 				</h4>
 				<nav class="flex flex-col gap-3 text-sm">
-					<a href="/" class="text-muted-foreground transition-colors hover:text-primary"
-						>All Projects</a
+					<a
+						href="/"
+						class="group flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
 					>
-					<a href="/#featured" class="text-muted-foreground transition-colors hover:text-primary"
-						>Featured Stacks</a
+						<span class="h-px w-0 bg-primary transition-all group-hover:w-2"></span>
+						All Vessels
+					</a>
+					<a
+						href="/#featured"
+						class="group flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
 					>
-					<a href="/#clusters" class="text-muted-foreground transition-colors hover:text-primary"
-						>Clusters</a
+						<span class="h-px w-0 bg-primary transition-all group-hover:w-2"></span>
+						Flagships
+					</a>
+					<a
+						href="/#clusters"
+						class="group flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
 					>
+						<span class="h-px w-0 bg-primary transition-all group-hover:w-2"></span>
+						Active Fleets
+					</a>
 					<a
 						href="/#experimental"
-						class="text-muted-foreground transition-colors hover:text-primary">Experimental</a
+						class="group flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
 					>
+						<span class="h-px w-0 bg-primary transition-all group-hover:w-2"></span>
+						Dry Dock
+					</a>
 				</nav>
 			</div>
 
-			<!-- Platform -->
-			<div class="space-y-4">
+			<!-- Comms (Social) -->
+			<div class="cursor-default space-y-6">
 				<h4
-					class="flex items-center gap-2 text-sm font-bold tracking-widest text-foreground uppercase"
+					class="flex items-center gap-2 text-xs font-bold tracking-[0.2em] text-foreground uppercase"
 				>
-					<Shield class="size-4 text-primary" />
-					Platform
-				</h4>
-				<nav class="flex flex-col gap-3 text-sm">
-					<a href="/#about" class="text-muted-foreground transition-colors hover:text-primary"
-						>Architecture</a
-					>
-					<a href="/#docs" class="text-muted-foreground transition-colors hover:text-primary"
-						>Blueprint</a
-					>
-					<a href="/#legal" class="text-muted-foreground transition-colors hover:text-primary"
-						>System Status</a
-					>
-				</nav>
-			</div>
-
-			<!-- Engineering -->
-			<div class="space-y-4">
-				<h4
-					class="flex items-center gap-2 text-sm font-bold tracking-widest text-foreground uppercase"
-				>
-					<Globe class="size-4 text-primary" />
-					Network
+					<Radio class="size-3.5 text-primary" />
+					COMMS
 				</h4>
 				<nav class="flex flex-col gap-3 text-sm">
 					<a
-						href="https://github.com/settings/tokens"
-						class="text-muted-foreground transition-colors hover:text-primary">API Console</a
+						href="https://github.com/Michael-Obele"
+						target="_blank"
+						rel="noreferrer"
+						class="group flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
 					>
+						<span class="h-px w-0 bg-primary transition-all group-hover:w-2"></span>
+						Transmission
+					</a>
 					<a
-						href="https://vercel.com"
-						class="text-muted-foreground transition-colors hover:text-primary">Deployment</a
+						href="mailto:contact@shipyard.registry"
+						class="group flex items-center gap-2 text-muted-foreground transition-colors hover:text-primary"
 					>
-					<a
-						href="https://lucide.dev"
-						class="text-muted-foreground transition-colors hover:text-primary">Icons Library</a
-					>
+						<span class="h-px w-0 bg-primary transition-all group-hover:w-2"></span>
+						Signal
+					</a>
 				</nav>
 			</div>
-		</div>
 
-		<!-- Diagnostic Panel Redesign -->
-		<div
-			class="mt-20 overflow-hidden rounded-sm border border-slate-800 bg-background/50 font-mono text-[10px] tracking-[0.2em] uppercase"
-		>
-			<div class="flex flex-wrap items-stretch divide-x divide-slate-800">
-				<!-- Terminal Label -->
-				<div class="flex items-center gap-3 bg-slate-900/80 px-4 py-3 text-primary">
-					<Terminal class="size-3.5" />
-					<span class="font-bold">diagnostic_panel</span>
-				</div>
-
-				<!-- Version & Build -->
-				<div
-					class="group relative flex items-center gap-2 px-5 py-3 transition-colors hover:bg-slate-900/40"
+			<!-- Status (Meta) -->
+			<div class="cursor-default space-y-6">
+				<h4
+					class="flex items-center gap-2 text-xs font-bold tracking-[0.2em] text-foreground uppercase"
 				>
-					<HoverCard.Root openDelay={100} closeDelay={100}>
-						<HoverCard.Trigger class="flex items-center gap-2 outline-none">
-							<Hash class="size-3 text-muted-foreground" />
-							<span class="text-muted-foreground">ver:</span>
-							<span class="text-foreground">1.0.4_stable</span>
-						</HoverCard.Trigger>
-						<HoverCard.Content class="w-64 border-slate-800 bg-card p-4 backdrop-blur-xl">
-							<div class="space-y-3">
-								<div
-									class="flex items-center gap-2 border-b border-primary/20 pb-2 text-xs font-bold text-primary"
-								>
-									<Layers class="size-3.5" />
-									BUILD_METADATA
-								</div>
-								<div class="space-y-1.5 text-[10px] leading-relaxed text-muted-foreground">
-									<div class="flex justify-between">
-										<span>TIMESTAMP:</span>
-										<span class="text-foreground">2026-02-06T14:22Z</span>
-									</div>
-									<div class="flex justify-between">
-										<span>COMMIT_HASH:</span>
-										<span class="text-foreground">eb0f92d</span>
-									</div>
-									<div class="flex justify-between">
-										<span>ENVIRONMENT:</span>
-										<span class="text-foreground">PROD_STABLE</span>
-									</div>
-								</div>
-							</div>
-						</HoverCard.Content>
-					</HoverCard.Root>
-				</div>
-
-				<!-- Status -->
-				<div class="flex items-center gap-4 px-5 py-3">
-					<div class="flex items-center gap-2">
-						<Activity class="size-3 text-emerald-500" />
-						<span class="text-muted-foreground">runtime:</span>
-						<span class="flex items-center gap-2 font-bold text-emerald-500">
-							online
-							<span
-								class="inline-block size-1 animate-pulse rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-							></span>
-						</span>
+					<Radar class="size-3.5 text-primary" />
+					COORDINATES
+				</h4>
+				<div class="space-y-4 text-sm text-muted-foreground">
+					<div class="flex items-center justify-between border-b border-border pb-2">
+						<span>Systems</span>
+						<span class="font-mono text-primary">ONLINE</span>
 					</div>
-				</div>
-
-				<!-- Compute -->
-				<div class="hidden items-center gap-2 px-5 py-3 md:flex">
-					<Cpu class="size-3 text-muted-foreground" />
-					<span class="text-muted-foreground">node:</span>
-					<span class="text-foreground">edge_worker_01</span>
-				</div>
-
-				<!-- Copyright (Auto margins) -->
-				<div class="ml-auto flex items-center px-6 py-3 text-[9px] text-muted-foreground/60">
-					<span>&copy; shipyard_eng_{new Date().getFullYear()}</span>
+					<div class="flex items-center justify-between border-b border-border pb-2">
+						<span>Registry</span>
+						<span class="font-mono text-foreground">v2.0.0</span>
+					</div>
+					<p class="pt-2 text-[10px] leading-relaxed uppercase opacity-60">
+						&copy; {new Date().getFullYear()} Shipyard. <br />
+						All rights reserved.
+					</p>
 				</div>
 			</div>
-
-			<!-- Machined Bottom Bar Effect -->
-			<div class="h-1 w-full bg-linear-to-r from-transparent via-primary/20 to-transparent"></div>
 		</div>
 	</div>
 </footer>
