@@ -56,14 +56,14 @@
 							class="size-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary"
 						/>
 						<Card.Title
-							class="font-mono text-sm leading-tight font-bold tracking-tight decoration-primary/50 underline-offset-4 group-hover:underline"
+							class="font-mono text-base leading-tight font-bold tracking-tight decoration-primary/50 underline-offset-4 group-hover:underline"
 							>{project.name}</Card.Title
 						>
 					</div>
 					{#if typeLabel}
 						<Badge
 							variant="outline"
-							class="shrink-0 rounded-none border-foreground/15 px-1.5 py-0 font-mono text-[9px] tracking-widest text-muted-foreground"
+							class="shrink-0 rounded-none border-foreground/15 px-1.5 py-0 font-mono text-[10px] tracking-widest text-muted-foreground"
 						>
 							{typeLabel}
 						</Badge>
@@ -75,7 +75,7 @@
 
 			<!-- ═══ CONTENT ═══ -->
 			<Card.Content class="grow pt-0 pl-5">
-				<p class="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+				<p class="line-clamp-2 text-[15px] leading-relaxed text-muted-foreground">
 					{project.description || 'No description available.'}
 				</p>
 			</Card.Content>
@@ -86,7 +86,7 @@
 			>
 				<!-- Language -->
 				<span
-					class="flex items-center gap-1.5 font-mono text-[10px] tracking-wider text-muted-foreground"
+					class="flex items-center gap-1.5 font-mono text-xs tracking-wider text-muted-foreground"
 				>
 					<span class="inline-block size-2 rounded-full" style="background-color: {langColor}"
 					></span>
@@ -94,9 +94,7 @@
 				</span>
 
 				<!-- Stars + Date -->
-				<div
-					class="flex items-center gap-3 font-mono text-[10px] tracking-wider text-muted-foreground"
-				>
+				<div class="flex items-center gap-3 font-mono text-xs tracking-wider text-muted-foreground">
 					<span class="flex items-center gap-1">
 						<Star class="size-2.5" />
 						{project.stars}

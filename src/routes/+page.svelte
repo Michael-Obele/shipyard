@@ -353,7 +353,7 @@
 						trigger="hover"
 					/>
 					<h3 class="text-xl font-bold tracking-tight text-foreground uppercase">Active Fleets</h3>
-					<span class="ml-auto font-mono text-xs text-muted-foreground"
+					<span class="ml-auto font-mono text-sm text-muted-foreground"
 						>{fleets.length} FORMATIONS</span
 					>
 				</div>
@@ -382,7 +382,7 @@
 					>
 						Dry Dock
 					</h3>
-					<span class="ml-auto font-mono text-xs text-amber-600/80 dark:text-yellow-600/60"
+					<span class="ml-auto font-mono text-sm text-amber-600/80 dark:text-yellow-600/60"
 						>{dryDock.length} R&D UNITS</span
 					>
 				</div>
@@ -414,7 +414,7 @@
 					<h3 class="text-xl font-bold tracking-tight text-foreground uppercase">
 						Vessel Manifest
 					</h3>
-					<span class="ml-auto font-mono text-xs text-muted-foreground">{cargo.length} UNITS</span>
+					<span class="ml-auto font-mono text-sm text-muted-foreground">{cargo.length} UNITS</span>
 				</div>
 
 				{#if viewMode === 'grid'}
@@ -446,16 +446,16 @@
 										class="size-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary"
 									/>
 									<div class="min-w-0">
-										<h4 class="truncate font-mono text-sm font-bold text-foreground">
+										<h4 class="truncate font-mono text-base font-bold text-foreground">
 											{project.name}
 										</h4>
-										<p class="truncate text-xs text-muted-foreground">
+										<p class="truncate text-sm text-muted-foreground">
 											{project.description || 'No description available.'}
 										</p>
 									</div>
 								</div>
 								<div
-									class="flex shrink-0 items-center gap-4 font-mono text-[10px] tracking-wider text-muted-foreground"
+									class="flex shrink-0 items-center gap-4 font-mono text-xs tracking-wider text-muted-foreground"
 								>
 									<span class="hidden items-center gap-1.5 md:flex">
 										<span

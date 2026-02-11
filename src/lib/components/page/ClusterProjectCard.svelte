@@ -36,13 +36,13 @@
 				<div class="flex items-center gap-2">
 					<Container class="size-3.5 text-primary-foreground/80" />
 					<span
-						class="font-mono text-[11px] font-bold tracking-widest text-primary-foreground uppercase"
+						class="font-mono text-xs font-bold tracking-widest text-primary-foreground uppercase"
 					>
 						GROUP
 					</span>
 				</div>
 				<span
-					class="font-mono text-[10px] font-medium tracking-wider text-primary-foreground/70 uppercase"
+					class="font-mono text-[11px] font-medium tracking-wider text-primary-foreground/70 uppercase"
 				>
 					{project.repoCount} modules
 				</span>
@@ -50,14 +50,14 @@
 
 			<!-- ═══ TITLE ZONE ═══ -->
 			<Card.Header class="rounded-none pb-2">
-				<Card.Title class="font-mono text-lg leading-tight font-black tracking-tight">
+				<Card.Title class="font-mono text-xl leading-tight font-black tracking-tight">
 					{project.name}
 				</Card.Title>
 			</Card.Header>
 
 			<!-- ═══ CONTENT ═══ -->
 			<Card.Content class="flex grow flex-col gap-3 pt-0">
-				<p class="line-clamp-2 text-sm leading-relaxed text-muted-foreground">
+				<p class="line-clamp-2 text-[15px] leading-relaxed text-muted-foreground">
 					{project.description}
 				</p>
 
@@ -65,7 +65,7 @@
 				<div class="flex items-center gap-3">
 					<span class="h-px flex-1 bg-foreground/10"></span>
 					<span
-						class="font-mono text-[9px] font-bold tracking-[0.2em] text-muted-foreground/60 uppercase"
+						class="font-mono text-[10px] font-bold tracking-[0.2em] text-muted-foreground/60 uppercase"
 					>
 						manifest
 					</span>
@@ -85,17 +85,17 @@
 									<HoverCard.Trigger
 										class="flex w-full items-center gap-2 border-l-2 border-transparent px-2 py-1 text-left font-mono transition-colors hover:border-l-primary hover:bg-primary/5"
 									>
-										<span class="w-5 text-[10px] text-muted-foreground/50 tabular-nums">
+										<span class="w-5 text-xs text-muted-foreground/50 tabular-nums">
 											{String(i + 1).padStart(2, '0')}
 										</span>
-										<span class="truncate text-xs text-foreground/80">
+										<span class="truncate text-sm text-foreground/80">
 											{sub.name}
 										</span>
 									</HoverCard.Trigger>
 									<HoverCard.Content class="w-72 rounded-none border-2 border-foreground/15">
 										<div class="space-y-2">
-											<h4 class="font-mono text-sm font-bold">@{sub.name}</h4>
-											<p class="text-sm text-muted-foreground">
+											<h4 class="font-mono text-base font-bold">@{sub.name}</h4>
+											<p class="text-[15px] text-muted-foreground">
 												{sub.description || 'No description provided.'}
 											</p>
 											{#if sub.stars > 0}
@@ -108,7 +108,7 @@
 											{/if}
 											<div class="flex items-center gap-1.5 pt-1">
 												<CalendarDays class="size-3 text-muted-foreground/70" />
-												<span class="font-mono text-[10px] text-muted-foreground">
+												<span class="font-mono text-xs text-muted-foreground">
 													{new Date(sub.updatedAt).toLocaleDateString()}
 												</span>
 											</div>
@@ -130,7 +130,7 @@
 					variant="outline"
 					size="sm"
 					href={`/projects/${project.id}`}
-					class="mt-auto w-full rounded-none border-2 border-foreground/15 font-mono text-xs font-bold tracking-wider uppercase transition-all hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground"
+					class="mt-auto w-full rounded-none border-2 border-foreground/15 font-mono text-sm font-bold tracking-wider uppercase transition-all hover:bg-primary hover:text-primary-foreground dark:hover:bg-primary dark:hover:text-primary-foreground"
 				>
 					Inspect Fleet
 					<ArrowRight class="size-3.5" />
@@ -141,12 +141,12 @@
 			<Card.Footer
 				class="flex items-center justify-between border-t-2 border-foreground/10 bg-muted/50 px-4 py-2 dark:bg-muted/30"
 			>
-				<span class="font-mono text-[10px] tracking-wider text-muted-foreground uppercase">
+				<span class="font-mono text-xs tracking-wider text-muted-foreground uppercase">
 					upd: {date}
 				</span>
 				{#if totalStars > 0}
 					<span
-						class="flex items-center gap-1 font-mono text-[10px] tracking-wider text-muted-foreground"
+						class="flex items-center gap-1 font-mono text-xs tracking-wider text-muted-foreground"
 					>
 						<Star class="size-3" />
 						{totalStars}
