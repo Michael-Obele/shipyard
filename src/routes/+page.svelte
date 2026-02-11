@@ -21,7 +21,8 @@
 		Calendar,
 		ArrowDownAZ,
 		Star,
-		Rocket
+		Rocket,
+		ChevronRight
 	} from 'lucide-svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -407,30 +408,59 @@
 						{/each}
 					</div>
 				{:else}
-					<div class="space-y-2" in:fly={{ y: 20, duration: 300 }}>
+					<div class="space-y-1" in:fly={{ y: 20, duration: 300 }}>
 						{#each cargo as project (project.id)}
-							<div
-								class="flex items-center justify-between rounded-lg border border-border bg-card/50 p-4 transition-colors hover:border-primary/30"
+							{@const langColor = project.languages[0]?.color ?? 'var(--muted-foreground)'}
+							{@const langName = project.languages[0]?.name ?? '—'}
+							<a
+								href="/projects/{project.id}"
+								class="group relative flex items-center justify-between overflow-hidden rounded-none border-2 border-foreground/15 bg-card p-3 pl-5 transition-all duration-150 hover:-translate-x-0.5 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-[2px_2px_0px_0px] hover:shadow-primary/20 dark:border-foreground/20"
 							>
-								<div class="flex items-center gap-4">
-									<div
-										class="flex size-10 items-center justify-center rounded bg-secondary/50 font-mono text-xs text-muted-foreground"
-									>
-										{project.name.slice(0, 2).toUpperCase()}
-									</div>
-									<div>
-										<h4 class="font-bold text-foreground">{project.name}</h4>
-										<p class="text-xs text-muted-foreground">{project.description}</p>
+								<!-- Language accent stripe -->
+								<div
+									class="absolute top-0 left-0 h-full w-0.75"
+									style="background-color: {langColor}"
+								></div>
+
+								<div class="flex min-w-0 items-center gap-3">
+									<Terminal
+										class="size-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary"
+									/>
+									<div class="min-w-0">
+										<h4 class="truncate font-mono text-sm font-bold text-foreground">
+											{project.name}
+										</h4>
+										<p class="truncate text-xs text-muted-foreground">
+											{project.description || 'No description available.'}
+										</p>
 									</div>
 								</div>
-								<div class="flex items-center gap-4">
-									<div class="hidden items-center gap-1 text-xs text-muted-foreground md:flex">
-										<Star class="size-3" />
+								<div
+									class="flex shrink-0 items-center gap-4 font-mono text-[10px] tracking-wider text-muted-foreground"
+								>
+									<span class="hidden items-center gap-1.5 md:flex">
+										<span
+											class="inline-block size-2 rounded-full"
+											style="background-color: {langColor}"
+										></span>
+										{langName}
+									</span>
+									<span class="flex items-center gap-1">
+										<Star class="size-2.5" />
 										{project.stars}
-									</div>
-									<Button variant="ghost" size="sm" href="/projects/{project.id}">Inspect</Button>
+									</span>
+									<span class="hidden sm:inline">
+										{new Date(project.updatedAt).toLocaleDateString('en-US', {
+											month: 'numeric',
+											day: 'numeric',
+											year: 'numeric'
+										})}
+									</span>
+									<ChevronRight
+										class="size-3.5 text-muted-foreground/50 transition-colors group-hover:text-primary"
+									/>
 								</div>
-							</div>
+							</a>
 						{/each}
 					</div>
 				{/if}
