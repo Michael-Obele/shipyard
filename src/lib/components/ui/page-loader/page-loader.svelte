@@ -1,7 +1,16 @@
 <script lang="ts">
 	import { fade } from 'svelte/transition';
+	import { set } from 'valibot';
 
 	let { visible = true } = $props();
+	let state = $state('in-reveal');
+	$effect(() => {
+		setTimeout(() => {
+			if (state === 'in-reveal') {
+				state = 'loop-cycle';
+			}
+		}, 300);
+	});
 </script>
 
 {#if visible}
@@ -18,9 +27,9 @@
 			<lord-icon
 				src="https://cdn.lordicon.com/ginorzey.json"
 				trigger="loop"
-				state="loop-cycle"
+				{state}
 				style="width:200px;height:200px"
-				colors="primary:#6366f1,secondary:#475569"
+				colors="primary:#d46211,secondary:#475569"
 			>
 			</lord-icon>
 
