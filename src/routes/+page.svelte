@@ -22,7 +22,8 @@
 		ArrowDownAZ,
 		Star,
 		Rocket,
-		ChevronRight
+		ChevronRight,
+		Tags
 	} from 'lucide-svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -39,7 +40,7 @@
 	let allProjects = $derived<DisplayProject[]>(data.projects || []);
 	let searchQuery = $state('');
 	let viewMode = $state<'grid' | 'list'>('grid');
-	let sortMode = $state<'name' | 'stars' | 'updated'>('name');
+	let sortMode = $state<'name' | 'stars' | 'updated' | 'type'>('name');
 	let sortDirection = $state<'asc' | 'desc'>('asc');
 	let isScrolled = $state(false);
 
@@ -87,6 +88,12 @@
 
 				if (sortMode === 'updated') {
 					return (new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()) * dir;
+				}
+
+				if (sortMode === 'type') {
+					const typeA = a.projectType || 'zz'; // Push undefined to end
+					const typeB = b.projectType || 'zz';
+					return typeA.localeCompare(typeB) * dir;
 				}
 
 				// Default 'name': alphabetical sort
@@ -195,6 +202,18 @@
 						>
 							<Calendar class="size-3" />
 							<span class="hidden lg:inline">Date</span>
+						</button>
+						<button
+							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
+							class:bg-accent={sortMode === 'type'}
+							class:text-primary={sortMode === 'type'}
+							class:text-muted-foreground={sortMode !== 'type'}
+							onclick={() => (sortMode = 'type')}
+							aria-label="Sort by Type"
+							title="Sort by Type"
+						>
+							<Tags class="size-3" />
+							<span class="hidden lg:inline">Type</span>
 						</button>
 
 						<Separator orientation="vertical" class="mx-1 h-4" />
