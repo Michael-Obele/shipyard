@@ -21,7 +21,7 @@
 	let { data } = $props();
 
 	// Initialize with SSR data to prevent flicker, but allow refresh
-	let projects = $state<any[]>(data.projects || []);
+	let projects = $derived<any[]>(data.projects || []);
 	let isLoading = $state(false);
 
 	$effect(() => {
