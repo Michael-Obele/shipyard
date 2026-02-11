@@ -1,6 +1,5 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
 	import type { DisplayProject } from '$lib/types';
 	import { Container, ArrowRight, CalendarDays, Star } from '@lucide/svelte';
