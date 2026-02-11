@@ -19,7 +19,7 @@
 		ArrowUp,
 		ArrowDown,
 		Calendar,
-		Sparkles,
+		ArrowDownAZ,
 		Star,
 		Rocket
 	} from 'lucide-svelte';
@@ -38,8 +38,8 @@
 	let allProjects = $derived<DisplayProject[]>(data.projects || []);
 	let searchQuery = $state('');
 	let viewMode = $state<'grid' | 'list'>('grid');
-	let sortMode = $state<'featured' | 'stars' | 'updated'>('featured');
-	let sortDirection = $state<'asc' | 'desc'>('desc');
+	let sortMode = $state<'name' | 'stars' | 'updated'>('name');
+	let sortDirection = $state<'asc' | 'desc'>('asc');
 	let isScrolled = $state(false);
 
 	// --- Side Effects ---
@@ -88,21 +88,8 @@
 					return (new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()) * dir;
 				}
 
-				// Default 'featured': prioritize flagship/clusters, then date
-				// 1. Flagship
-				const flagshipDiff = Number(a.isFlagship || 0) - Number(b.isFlagship || 0);
-				if (flagshipDiff !== 0) return flagshipDiff * dir;
-
-				// 2. Featured
-				const featuredDiff = Number(a.featured || 0) - Number(b.featured || 0);
-				if (featuredDiff !== 0) return featuredDiff * dir;
-
-				// 3. Clusters (Fleets)
-				const clusterDiff = Number(a.isCluster || 0) - Number(b.isCluster || 0);
-				if (clusterDiff !== 0) return clusterDiff * dir;
-
-				// Tie-breaker: Date
-				return (new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()) * dir;
+				// Default 'name': alphabetical sort
+				return a.name.localeCompare(b.name) * dir;
 			})
 	);
 
@@ -174,15 +161,15 @@
 					<div class="flex items-center gap-1 rounded-md border border-border bg-secondary/30 p-1">
 						<button
 							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
-							class:bg-accent={sortMode === 'featured'}
-							class:text-primary={sortMode === 'featured'}
-							class:text-muted-foreground={sortMode !== 'featured'}
-							onclick={() => (sortMode = 'featured')}
-							aria-label="Sort by Featured"
-							title="Sort by Featured"
+							class:bg-accent={sortMode === 'name'}
+							class:text-primary={sortMode === 'name'}
+							class:text-muted-foreground={sortMode !== 'name'}
+							onclick={() => (sortMode = 'name')}
+							aria-label="Sort by Name"
+							title="Sort by Name"
 						>
-							<Sparkles class="size-3" />
-							<span class="hidden lg:inline">Featured</span>
+							<ArrowDownAZ class="size-3" />
+							<span class="hidden lg:inline">Name</span>
 						</button>
 						<button
 							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
