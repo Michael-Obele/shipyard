@@ -1,7 +1,7 @@
 import { relations, sql } from 'drizzle-orm'
 import { boolean, foreignKey, integer, jsonb, pgTable, text, timestamp } from 'drizzle-orm/pg-core'
 
-export const RepositoryCache = pgTable('repository_caches', {
+export const RepositoryCache = pgTable('repository_cache', {
 	id: text('id').notNull().primaryKey().default(sql`cuid(1)`),
 	clusterName: text('clusterName').notNull().unique(),
 	repoNames: jsonb('repoNames').notNull(),
@@ -11,6 +11,10 @@ export const RepositoryCache = pgTable('repository_caches', {
 	isStale: boolean('isStale').notNull().default(true),
 	nextRefreshAt: timestamp('nextRefreshAt', { precision: 3 }).notNull().defaultNow(),
 	rawDataMetadata: jsonb('rawDataMetadata'),
+	expiresAt: timestamp('expiresAt', { precision: 3 }).notNull(),
+	status: text('status').notNull().default("ok"),
+	lastError: text('lastError'),
+	errorCount: integer('errorCount').notNull(),
 	createdAt: timestamp('createdAt', { precision: 3 }).notNull().defaultNow(),
 	updatedAt: timestamp('updatedAt', { precision: 3 }).notNull()
 });

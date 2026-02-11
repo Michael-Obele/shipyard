@@ -19,61 +19,69 @@ datasource db {
 /// Stores fetched repos with TTL-based refresh tracking
 /// Used for lazy loading and chunked API requests
 model RepositoryCache {
-  id              String    @id @default(cuid())
+  id              String   @id @default(cuid())
   /// Cluster identifier: e.g., "cinder", "tools", "docs"
-  clusterName     String    @unique
+  clusterName     String   @unique
   /// JSON array of repo names: ["cinder", "cinder-sv", "cinder-mcp"]
   repoNames       Json
   /// Full GitHub repo objects from GraphQL response
   rawData         Json
   /// Timestamp of last successful GitHub fetch (used for TTL calculation)
-  fetchedAt       DateTime  @default(now()) @db.Timestamptz
+  fetchedAt       DateTime @default(now()) @db.Timestamptz
   /// TTL in hours before data is considered stale (default 24)
-  ttlHours        Int       @default(24)
+  ttlHours        Int      @default(24)
   /// Boolean flag: is cluster data currently stale?
-  isStale         Boolean   @default(true)
+  isStale         Boolean  @default(true)
   /// Next recommended refresh time (now + ttlHours)
-  nextRefreshAt   DateTime  @default(now()) @db.Timestamptz
+  nextRefreshAt   DateTime @default(now()) @db.Timestamptz
   /// GitHub API rate limits snapshot
   rawDataMetadata Json?
+  /// Expiration timestamp for cache
+  expiresAt       DateTime @db.Timestamptz
+  /// Cache status: "ok", "refreshing", "error"
+  status          String   @default("ok")
+  /// Last error message if any
+  lastError       String?
+  /// Number of consecutive errors
+  errorCount      Int      @default(0)
   /// Timestamp: when record was upserted
-  createdAt       DateTime  @default(now()) @db.Timestamptz
+  createdAt       DateTime @default(now()) @db.Timestamptz
   /// Timestamp: when record was last modified
-  updatedAt       DateTime  @updatedAt @db.Timestamptz
+  updatedAt       DateTime @updatedAt @db.Timestamptz
 
   refreshLogs RefreshLog[]
 
   /// Table name in database
-  @@map("repository_caches")
+  @@map("repository_cache")
 }
 
 /// Audit trail of refresh attempts
 /// Tracks successful/failed GitHub API calls, retries, and errors
 model RefreshLog {
-  id                 String            @id @default(cuid())
-  clusterName        String
-  repositoryCacheId  String
+  id                String    @id @default(cuid())
+  clusterName       String
+  repositoryCacheId String
   /// "success" | "error" | "partial"
-  status             String
+  status            String
   /// Raw error message if applicable
-  errorMessage       String?
+  errorMessage      String?
   /// Number of items refreshed/attempted in this batch
-  itemsAttempted     Int
+  itemsAttempted    Int
   /// API request count consumed
-  apiRequestsUsed    Int
+  apiRequestsUsed   Int
   /// Retry attempt number (0 = first attempt)
-  retryAttempt       Int               @default(0)
+  retryAttempt      Int       @default(0)
   /// Timestamp: when refresh was attempted
-  attemptedAt        DateTime          @default(now()) @db.Timestamptz
+  attemptedAt       DateTime  @default(now()) @db.Timestamptz
   /// Completion timestamp (null if still in progress)
-  completedAt        DateTime? @db.Timestamptz
+  completedAt       DateTime? @db.Timestamptz
   /// Total duration in ms (null if still in progress)
-  durationMs         Int?
+  durationMs        Int?
 
   repositoryCache RepositoryCache @relation(fields: [repositoryCacheId], references: [id], onDelete: Cascade)
 
-  /// Table name in database
-  @@map("refresh_logs")
   @@index([clusterName])
   @@index([repositoryCacheId])
+  /// Table name in database
+  @@map("refresh_logs")
 }

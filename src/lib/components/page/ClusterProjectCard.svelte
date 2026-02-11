@@ -16,7 +16,7 @@
 	);
 </script>
 
-<a href="/projects/{project.id}" class="group block h-full">
+<div class="group block h-full">
 	<!-- Stack Effect Container -->
 	<div class="relative h-full transition-transform duration-300 md:group-hover:-translate-y-1">
 		<!-- Background Layer (Stack Illusion) -->
@@ -103,4 +103,4 @@
 			</Card.Footer>
 		</Card.Root>
 	</div>
-</a>
+</div>
