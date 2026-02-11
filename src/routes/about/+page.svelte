@@ -80,7 +80,7 @@
 			description:
 				'Software should be agentic-ready and human-legible. Every commit is an exercise in turning chaos into defined logic.',
 			icon: Focus,
-			color: 'text-slate-400'
+			color: 'text-primary'
 		}
 	];
 
@@ -194,10 +194,10 @@
 	<!-- The Signal Narrative -->
 	<section class="mb-32" in:fly={{ y: 20, delay: 200, duration: 800 }}>
 		<div
-			class="rounded-2xl border border-slate-800 bg-linear-to-b from-card/50 to-card p-1 backdrop-blur-xl"
+			class="rounded-2xl border border-border bg-linear-to-b from-card/50 to-card p-1 backdrop-blur-xl"
 		>
 			<div
-				class="grid items-center gap-12 rounded-xl border border-slate-800/50 bg-background/50 p-8 md:grid-cols-2 md:p-12"
+				class="grid items-center gap-12 rounded-xl border border-border/50 bg-background/50 p-8 md:grid-cols-2 md:p-12"
 			>
 				<div class="space-y-6">
 					<div class="flex items-center gap-3 text-indigo-400">
@@ -231,7 +231,7 @@
 
 				<!-- Visual Representation of Signal -->
 				<div
-					class="group relative aspect-square overflow-hidden rounded-lg border border-slate-800 bg-slate-950/50 md:aspect-video"
+					class="group relative aspect-square overflow-hidden rounded-lg border border-border bg-background/50 md:aspect-video"
 				>
 					<!-- Abstract "Waves" -->
 					<div
@@ -240,7 +240,7 @@
 						<div class="flex h-32 items-end gap-1">
 							{#each Array(24) as _, i}
 								<div
-									class="w-1 rounded-full bg-slate-800"
+									class="w-1 rounded-full bg-border"
 									style="height: {Math.sin(i * 0.5) * 40 + 60}%"
 								></div>
 							{/each}
@@ -250,20 +250,20 @@
 					<!-- Signal Overlay -->
 					<div class="absolute inset-0 flex flex-col items-center justify-center">
 						<div
-							class="w-56 space-y-4 rounded-lg border border-slate-800 bg-background/90 p-6 shadow-2xl backdrop-blur-xl"
+							class="w-56 space-y-4 rounded-lg border border-border bg-background/90 p-6 shadow-2xl backdrop-blur-xl"
 						>
-							<div class="flex items-center justify-between border-b border-slate-800 pb-3">
+							<div class="flex items-center justify-between border-b border-border pb-3">
 								<div class="flex items-center gap-2">
 									<Signal class="size-3 animate-pulse text-primary" />
 									<span class="font-mono text-[10px] text-muted-foreground uppercase"
 										>High Signal</span
 									>
 								</div>
-								<span class="font-mono text-[9px] text-slate-500">Curated</span>
+								<span class="font-mono text-[9px] text-muted-foreground/60">Curated</span>
 							</div>
 							<div class="space-y-2">
 								<div class="h-1 w-full rounded-full bg-primary/40"></div>
-								<div class="h-1 w-3/4 rounded-full bg-slate-800"></div>
+								<div class="h-1 w-3/4 rounded-full bg-border"></div>
 							</div>
 						</div>
 					</div>
@@ -294,7 +294,7 @@
 				{#each evolution as step, i}
 					<Accordion.Item
 						value="step-{i + 1}"
-						class="mb-4 overflow-hidden rounded-xl border border-slate-800 bg-card/30 backdrop-blur-sm transition-all hover:bg-card/50"
+						class="mb-4 overflow-hidden rounded-xl border border-border bg-card/30 backdrop-blur-sm transition-all hover:bg-card/50"
 					>
 						<Accordion.Trigger class="px-6 py-8 hover:no-underline">
 							<div class="flex items-center gap-6 text-left">
@@ -320,12 +320,14 @@
 								<div class="grid gap-4 md:grid-cols-2">
 									{#each step.evidence as item}
 										<div
-											class="group flex items-center gap-3 rounded-lg border border-slate-800/50 bg-slate-900/40 p-4 transition-colors hover:border-primary/30"
+											class="group flex items-center gap-3 rounded-lg border border-border/50 bg-secondary/40 p-4 transition-colors hover:border-primary/30"
 										>
 											<div
-												class="flex h-6 w-1 shrink-0 rounded-full bg-slate-800 transition-colors group-hover:bg-primary/50"
+												class="flex h-6 w-1 shrink-0 rounded-full bg-border transition-colors group-hover:bg-primary/50"
 											></div>
-											<span class="text-sm font-medium text-slate-300 group-hover:text-foreground">
+											<span
+												class="text-sm font-medium text-muted-foreground group-hover:text-foreground"
+											>
 												{item}
 											</span>
 										</div>
@@ -345,7 +347,7 @@
 			<h2 class="text-3xl font-black tracking-tighter uppercase md:text-5xl">
 				CORE <span class="text-muted-foreground">PHILOSOPHY</span>
 			</h2>
-			<div class="h-px flex-1 bg-slate-800 md:mx-8"></div>
+			<div class="h-px flex-1 bg-border md:mx-8"></div>
 			<p class="max-w-xs text-right text-sm text-muted-foreground">
 				Adhering to the pillars of the Mechanical Artisan.
 			</p>
@@ -354,7 +356,7 @@
 		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 lg:grid-rows-2">
 			<!-- Main Feature (Large) -->
 			<div
-				class="group relative col-span-2 row-span-2 overflow-hidden rounded-xl border border-slate-800 bg-linear-to-b from-card to-card/50 p-8 backdrop-blur-sm transition-all hover:border-primary/50"
+				class="group relative col-span-2 row-span-2 overflow-hidden rounded-xl border border-border bg-linear-to-b from-card to-card/50 p-8 backdrop-blur-sm transition-all hover:border-primary/50"
 			>
 				<div
 					class="absolute top-0 right-0 p-8 opacity-10 transition-transform group-hover:scale-110 group-hover:opacity-20"
@@ -384,11 +386,11 @@
 			<!-- Secondary Features -->
 			{#each pillars.slice(1) as item (item.title)}
 				<div
-					class="group relative overflow-hidden rounded-xl border border-slate-800 bg-card/50 p-6 backdrop-blur-sm transition-all hover:border-primary/50 hover:bg-card md:col-span-1 md:row-span-1"
+					class="group relative overflow-hidden rounded-xl border border-border bg-card/50 p-6 backdrop-blur-sm transition-all hover:border-primary/50 hover:bg-card md:col-span-1 md:row-span-1"
 				>
 					<div class="mb-4 flex items-center justify-between">
 						<div
-							class="flex h-10 w-10 items-center justify-center rounded-lg border border-slate-800 bg-slate-900 transition-colors group-hover:border-primary/50"
+							class="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-secondary transition-colors group-hover:border-primary/50"
 						>
 							<svelte:component this={item.icon} class="size-5 {item.color}" />
 						</div>
@@ -402,12 +404,12 @@
 
 			<!-- Filler / Decor -->
 			<div
-				class="flex items-center justify-center rounded-xl border border-dashed border-slate-800 bg-transparent p-6 opacity-30"
+				class="flex items-center justify-center rounded-xl border border-dashed border-border bg-transparent p-6 opacity-30"
 			>
 				<div class="text-center">
 					<div class="mx-auto mb-2 flex justify-center gap-1">
 						{#each Array(3) as _}
-							<div class="size-1 rounded-full bg-slate-500"></div>
+							<div class="size-1 rounded-full bg-muted-foreground/30"></div>
 						{/each}
 					</div>
 					<span class="font-mono text-[9px] tracking-[0.2em] text-muted-foreground uppercase"
@@ -431,7 +433,7 @@
 						arsenal of engineering tools.
 					</p>
 				</div>
-				<Tabs.List class="grid w-full grid-cols-2 bg-slate-900/50 p-1 md:w-auto">
+				<Tabs.List class="grid w-full grid-cols-2 bg-secondary/50 p-1 md:w-auto">
 					<Tabs.Trigger
 						value="blueprint"
 						class="px-8 py-2 font-mono text-[10px] tracking-widest uppercase"
@@ -454,10 +456,10 @@
 							<HoverCard.Root>
 								<HoverCard.Trigger class="block">
 									<div
-										class="group flex h-full flex-col gap-4 rounded-lg border border-slate-800 bg-secondary/10 p-6 transition-all duration-300 ease-out hover:scale-[1.02] hover:border-primary/30 hover:bg-secondary/20"
+										class="group flex h-full flex-col gap-4 rounded-lg border border-border bg-secondary/10 p-6 transition-all duration-300 ease-out hover:scale-[1.02] hover:border-primary/30 hover:bg-secondary/20"
 									>
 										<div
-											class="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-slate-700 bg-background shadow-inner transition-colors group-hover:border-primary/50"
+											class="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-border bg-background shadow-inner transition-colors group-hover:border-primary/50"
 										>
 											<tech.icon class="size-5 text-foreground" />
 										</div>
@@ -471,13 +473,13 @@
 										</div>
 									</div>
 								</HoverCard.Trigger>
-								<HoverCard.Content class="w-64 border-slate-800 bg-card/95 backdrop-blur-md">
+								<HoverCard.Content class="w-64 border-border bg-card/95 backdrop-blur-md">
 									<div class="flex flex-col gap-2">
 										<div class="flex items-center gap-2">
 											<tech.icon class="size-4 text-primary" />
 											<span class="text-sm font-bold tracking-tight">{tech.name}</span>
 										</div>
-										<Separator class="bg-slate-800/50" />
+										<Separator class="bg-border/50" />
 										<p class="text-xs leading-relaxed text-muted-foreground">
 											{tech.description}
 										</p>
@@ -496,10 +498,10 @@
 							<HoverCard.Root>
 								<HoverCard.Trigger class="block">
 									<div
-										class="group flex h-full flex-col gap-4 rounded-lg border border-slate-800 bg-indigo-950/10 p-6 transition-all duration-300 ease-out hover:scale-[1.02] hover:border-indigo-500/30 hover:bg-indigo-950/20"
+										class="group flex h-full flex-col gap-4 rounded-lg border border-border bg-primary/5 p-6 transition-all duration-300 ease-out hover:scale-[1.02] hover:border-primary/30 hover:bg-primary/10"
 									>
 										<div
-											class="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-slate-700 bg-background shadow-inner transition-colors group-hover:border-indigo-500/50"
+											class="flex h-10 w-10 shrink-0 items-center justify-center rounded border border-border bg-background shadow-inner transition-colors group-hover:border-primary/50"
 										>
 											<tech.icon class="size-5 text-foreground" />
 										</div>
@@ -513,13 +515,13 @@
 										</div>
 									</div>
 								</HoverCard.Trigger>
-								<HoverCard.Content class="w-64 border-slate-800 bg-card/95 backdrop-blur-md">
+								<HoverCard.Content class="w-64 border-border bg-card/95 backdrop-blur-md">
 									<div class="flex flex-col gap-2">
 										<div class="flex items-center gap-2">
-											<tech.icon class="size-4 text-indigo-400" />
+											<tech.icon class="size-4 text-primary" />
 											<span class="text-sm font-bold tracking-tight">{tech.name}</span>
 										</div>
-										<Separator class="bg-slate-800/50" />
+										<Separator class="bg-border/50" />
 										<p class="text-xs leading-relaxed text-muted-foreground">
 											{tech.description}
 										</p>
@@ -534,11 +536,11 @@
 	</section>
 
 	<!-- Technical Exchange / Footer -->
-	<section class="mt-32 border-t border-slate-800 pt-32 pb-16">
+	<section class="mt-32 border-t border-border pt-32 pb-16">
 		<div class="flex flex-col items-center gap-6 text-center">
 			<div class="group relative cursor-pointer">
 				<Avatar.Root
-					class="h-20 w-20 border-2 border-slate-800 transition-all group-hover:scale-105 group-hover:border-primary"
+					class="h-20 w-20 border-2 border-border transition-all group-hover:scale-105 group-hover:border-primary"
 				>
 					<Avatar.Image
 						src="https://avatars.githubusercontent.com/u/70345027?v=4"
@@ -568,7 +570,7 @@
 			<div class="mt-6 flex gap-4">
 				<a
 					href="https://github.com/Michael-Obele/"
-					class={buttonVariants({ variant: 'outline', class: 'gap-2 border-slate-700' })}
+					class={buttonVariants({ variant: 'outline', class: 'gap-2 border-border' })}
 				>
 					<Github class="size-4" />
 					Source
@@ -591,7 +593,11 @@
 
 <style>
 	:global(body) {
-		background-image: radial-gradient(circle at 50% 0%, hsla(243, 75%, 59%, 0.05), transparent 40%);
+		background-image: radial-gradient(
+			circle at 50% 0%,
+			color-mix(in srgb, var(--primary) 5%, transparent),
+			transparent 40%
+		);
 		background-attachment: fixed;
 	}
 </style>

@@ -1,8 +1,10 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '$lib/components/ui/button';
 	import type { DisplayProject } from '$lib/types';
-	import { Boxes, FolderGit, CalendarDays } from '@lucide/svelte';
+	import { Boxes, FolderGit, CalendarDays, ExternalLink } from '@lucide/svelte';
 	import * as HoverCard from '$lib/components/ui/hover-card';
 
 	let { project }: { project: DisplayProject } = $props();
@@ -16,15 +18,21 @@
 	);
 </script>
 
-<div class="group block h-full">
+<div
+	role="button"
+	tabindex="0"
+	onclick={() => goto(`/projects/${project.id}`)}
+	onkeydown={(e) => e.key === 'Enter' && goto(`/projects/${project.id}`)}
+	class="group block h-full cursor-pointer text-left"
+>
 	<!-- Stack Effect Container -->
 	<div class="relative h-full transition-transform duration-300 md:group-hover:-translate-y-1">
 		<!-- Background Layer (Stack Illusion) -->
 		<div
-			class="absolute inset-0 -z-10 translate-x-2 translate-y-2 rounded-xl border border-primary/5 bg-primary/10 transition-transform duration-300 group-hover:translate-x-3 group-hover:translate-y-3"
+			class="absolute inset-0 -z-10 translate-x-2 translate-y-2 rounded-xl border border-primary/5 bg-primary/5 transition-transform duration-300 group-hover:translate-x-3 group-hover:translate-y-3 dark:bg-primary/10"
 		></div>
 		<div
-			class="absolute inset-0 -z-10 translate-x-1 translate-y-1 rounded-xl border border-border/50 bg-secondary transition-transform duration-300 group-hover:translate-x-1.5 group-hover:translate-y-1.5"
+			class="absolute inset-0 -z-10 translate-x-1 translate-y-1 rounded-xl border border-border/50 bg-muted/50 transition-transform duration-300 group-hover:translate-x-1.5 group-hover:translate-y-1.5 dark:bg-secondary"
 		></div>
 
 		<Card.Root
@@ -51,7 +59,7 @@
 
 				<div class="space-y-3">
 					<div
-						class="flex items-center gap-2 rounded-md bg-secondary/50 p-2 font-mono text-xs text-muted-foreground"
+						class="flex items-center gap-2 rounded-md bg-muted/50 p-2 font-mono text-xs text-muted-foreground dark:bg-secondary/50"
 					>
 						<Boxes class="size-3.5" />
 						<span>{project.repoCount} Modules Included</span>
@@ -59,32 +67,39 @@
 					<div class="flex flex-wrap gap-1.5">
 						{#if project.subProjects}
 							{#each project.subProjects.slice(0, 3) as sub (sub.name)}
-								<HoverCard.Root openDelay={200}>
-									<HoverCard.Trigger
-										class="flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/30 px-2 py-0.5 transition-colors hover:bg-secondary/80"
-									>
-										<span class="size-1.5 rounded-full bg-primary/40"></span>
-										<span class="max-w-25 truncate text-[10px] text-muted-foreground"
-											>{sub.name}</span
+								<!-- Prevent bubble up when interacting with HoverCard -->
+								<div
+									onclick={(e) => e.stopPropagation()}
+									onkeydown={(e) => e.stopPropagation()}
+									role="presentation"
+								>
+									<HoverCard.Root openDelay={200}>
+										<HoverCard.Trigger
+											class="flex items-center gap-1.5 rounded-full border border-border/50 bg-secondary/30 px-2 py-0.5 transition-colors hover:bg-secondary/80"
 										>
-									</HoverCard.Trigger>
-									<HoverCard.Content class="w-80">
-										<div class="flex justify-between space-x-4">
-											<div class="space-y-1">
-												<h4 class="text-sm font-semibold">@{sub.name}</h4>
-												<p class="text-sm">
-													{sub.description || 'No description provided.'}
-												</p>
-												<div class="flex items-center pt-2">
-													<CalendarDays class="mr-2 size-4 opacity-70" />
-													<span class="text-xs text-muted-foreground">
-														Updated {new Date(sub.updatedAt).toLocaleDateString()}
-													</span>
+											<span class="size-1.5 rounded-full bg-primary/40"></span>
+											<span class="max-w-25 truncate text-[10px] text-muted-foreground"
+												>{sub.name}</span
+											>
+										</HoverCard.Trigger>
+										<HoverCard.Content class="w-80">
+											<div class="flex justify-between space-x-4">
+												<div class="space-y-1">
+													<h4 class="text-sm font-semibold">@{sub.name}</h4>
+													<p class="text-sm">
+														{sub.description || 'No description provided.'}
+													</p>
+													<div class="flex items-center pt-2">
+														<CalendarDays class="mr-2 size-4 opacity-70" />
+														<span class="text-xs text-muted-foreground">
+															Updated {new Date(sub.updatedAt).toLocaleDateString()}
+														</span>
+													</div>
 												</div>
 											</div>
-										</div>
-									</HoverCard.Content>
-								</HoverCard.Root>
+										</HoverCard.Content>
+									</HoverCard.Root>
+								</div>
 							{/each}
 							{#if project.subProjects.length > 3}
 								<span class="pl-1 text-[10px] text-muted-foreground"
@@ -94,6 +109,11 @@
 						{/if}
 					</div>
 				</div>
+
+				<Button variant="outline" size="sm" href={`/projects/${project.id}`} class="mt-3 w-full">
+					View Project
+					<ExternalLink class="size-3" />
+				</Button>
 			</Card.Content>
 
 			<Card.Footer class="mt-auto border-t border-primary/10 bg-primary/5 px-4 py-2">

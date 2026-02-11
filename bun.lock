@@ -5,9 +5,11 @@
     "": {
       "name": "shipyard",
       "dependencies": {
+        "@lordicon/element": "^2.0.2",
         "@prisma/client": "^6.19.2",
         "bits-ui": "^2.15.5",
         "clsx": "^2.1.1",
+        "lottie-web": "^5.13.0",
         "lucide-svelte": "^0.563.0",
         "mode-watcher": "^1.1.0",
         "tailwind-merge": "^3.4.0",
@@ -107,6 +109,10 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.5", "", {}, "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
+
+    "@lordicon/element": ["@lordicon/element@2.0.2", "", { "dependencies": { "@lordicon/web": "^1.0.0" } }, "sha512-E//vnRDgf/zb4HlZWUF1eNviavBkvCxSm5KQwIVdDYLttvswcG0MADthnSdVAdb1Ob3GuWq9p1EQw5OeQZjZuQ=="],
+
+    "@lordicon/web": ["@lordicon/web@1.0.0", "", {}, "sha512-ffFZGtMpAJiYjFYiWOoPMCZt5Toacu7cvycC9yk8wDhc5WtXxnzhjaxHlZ3qM5PLYJlAF2dYeIUqcJCkH2f+dw=="],
 
     "@lucide/svelte": ["@lucide/svelte@0.563.1", "", { "peerDependencies": { "svelte": "^5" } }, "sha512-Kt+MbnE5D9RsuI/csmf7M+HWxALe57x3A0DhQ8pPnnUpneh7zuldrYjlT+veWtk+tVnp5doQtaAAxLujzIlhBw=="],
 
@@ -329,6 +335,8 @@
     "lightningcss-win32-x64-msvc": ["lightningcss-win32-x64-msvc@1.30.2", "", { "os": "win32", "cpu": "x64" }, "sha512-5g1yc73p+iAkid5phb4oVFMB45417DkRevRbt/El/gKXJk4jid+vPFF/AXbxn05Aky8PapwzZrdJShv5C0avjw=="],
 
     "locate-character": ["locate-character@3.0.0", "", {}, "sha512-SW13ws7BjaeJ6p7Q6CO2nchbYEc3X3J6WrmTTDto7yMPqVSZTUyY5Tjbid+Ab8gLnATtygYtiDIJGQRRn2ZOiA=="],
+
+    "lottie-web": ["lottie-web@5.13.0", "", {}, "sha512-+gfBXl6sxXMPe8tKQm7qzLnUy5DUPJPKIyRHwtpCpyUEYjHYRJC/5gjUvdkuO2c3JllrPtHXH5UJJK8LRYl5yQ=="],
 
     "lucide-svelte": ["lucide-svelte@0.563.0", "", { "peerDependencies": { "svelte": "^3 || ^4 || ^5.0.0-next.42" } }, "sha512-pjZKw7TpQcamfQrx7YdbOHgmrcNeKiGGMD0tKZQaVktwSsbqw28CsKc2Q97ttwjytiCWkJyOa8ij2Q+Og0nPfQ=="],
 

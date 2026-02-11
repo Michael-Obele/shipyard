@@ -188,6 +188,7 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 			languages: uniqueLangs,
 			isCluster: true,
 			featured: group.featured,
+			isFlagship: group.flagship || false,
 			experimental:
 				group.experimental ||
 				topics.includes('experimental') ||
@@ -227,6 +228,7 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 			languages: repo.languages.edges.map((e) => e.node),
 			isCluster: false,
 			featured: override?.featured || false,
+			isFlagship: override?.flagship || false,
 			experimental:
 				override?.experimental ||
 				repo.repositoryTopics.nodes.some(

@@ -4,9 +4,10 @@ export interface RegistryConfig {
 		name: string;
 		repos: string[];
 		featured: boolean;
+		flagship?: boolean;
 		experimental?: boolean;
 	}[];
-	overrides: Record<string, { name?: string; featured?: boolean; experimental?: boolean }>;
+	overrides: Record<string, { name?: string; featured?: boolean; flagship?: boolean; experimental?: boolean }>;
 }
 
 export const registryConfig: RegistryConfig = {
@@ -24,6 +25,12 @@ export const registryConfig: RegistryConfig = {
 			featured: true
 		},
 		{
+			id: 'mcps',
+			name: 'MCP Servers',
+			repos: ['shadcn-svelte-mcp', 'tauri-docs', 'rust-docs', 'go-docs', 'drizzle-docs-mcp', 'layerchart-docs'],
+			featured: true
+		},
+		{
 			id: 'experimental-labs',
 			name: 'Experimental Labs',
 			repos: [],
@@ -34,7 +41,8 @@ export const registryConfig: RegistryConfig = {
 	overrides: {
 		tif: {
 			name: 'Tech Invoice Forge',
-			featured: true
+			featured: true,
+			flagship: true
 		},
 		'secret-project': {
 			experimental: true

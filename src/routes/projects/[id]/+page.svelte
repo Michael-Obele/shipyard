@@ -23,9 +23,14 @@
 		Github
 	} from 'lucide-svelte';
 	import { page } from '$app/state';
-	import { getProject } from '$lib/remote/project.remote';
+	import { fade, fly } from 'svelte/transition';
 
-	const project = $derived(await getProject(page.params.id as string));
+	// Receive data from +page.server.ts
+	let { data } = $props();
+
+	// Access the project data - since it's verified by server, we can treat it as present
+	// or rely on SvelteKit's error boundary if it threw 404
+	const project = $derived(data.project);
 
 	let date = $derived(
 		new Date(project.updatedAt).toLocaleDateString('en-US', {
@@ -120,17 +125,30 @@
 
 <svelte:head>
 	<title>{project.name} - Shipyard</title>
-	<meta name="description" content={project.description || `${project.name} - A curated open-source project in the Shipyard registry.`} />
+	<meta
+		name="description"
+		content={project.description ||
+			`${project.name} - A curated open-source project in the Shipyard registry.`}
+	/>
 	<meta name="keywords" content={project.topics.join(', ')} />
 	<link rel="canonical" href="https://shipyard.registry/projects/{project.id}" />
 	<meta property="og:title" content="{project.name} - Shipyard" />
-	<meta property="og:description" content={project.description || `${project.name} - A curated open-source project.`} />
+	<meta
+		property="og:description"
+		content={project.description || `${project.name} - A curated open-source project.`}
+	/>
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://shipyard.registry/projects/{project.id}" />
-	<meta property="og:image" content="https://opengraph.githubassets.com/1/{project.url.replace('https://github.com/', '')}" />
+	<meta
+		property="og:image"
+		content="https://opengraph.githubassets.com/1/{project.url.replace('https://github.com/', '')}"
+	/>
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content="{project.name} - Shipyard" />
-	<meta name="twitter:description" content={project.description || `${project.name} - A curated open-source project.`} />
+	<meta
+		name="twitter:description"
+		content={project.description || `${project.name} - A curated open-source project.`}
+	/>
 </svelte:head>
 
 <div class="min-h-screen font-sans selection:bg-primary/20">

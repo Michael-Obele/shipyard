@@ -1,315 +1,453 @@
 <script lang="ts">
-	import ProjectCard from '$lib/components/page/ProjectCard.svelte';
-	import { Badge } from '$lib/components/ui/badge';
-	import { Separator } from '$lib/components/ui/separator';
+	import { fade, fly } from 'svelte/transition';
+	import { cubicOut } from 'svelte/easing';
 	import {
-		Terminal,
-		Activity,
 		Anchor,
-		Sparkles,
-		Layers,
-		Beaker,
-		Cpu,
+		Ship,
+		Compass,
+		Container,
+		LayoutGrid,
+		Filter,
+		Search,
 		ArrowRight,
 		Shield,
-		BookOpen,
-		Network,
-		Boxes
-	} from '@lucide/svelte';
+		Activity,
+		Terminal,
+		List,
+		Hexagon,
+		ArrowUpDown,
+		ArrowUp,
+		ArrowDown,
+		Calendar,
+		Sparkles,
+		Star,
+		Rocket
+	} from 'lucide-svelte';
+	import { Badge } from '$lib/components/ui/badge';
+	import { Button } from '$lib/components/ui/button';
+	import { Separator } from '$lib/components/ui/separator';
+	import { Lordicon } from '$lib/components/ui/lordicon';
+	import ProjectCard from '$lib/components/page/ProjectCard.svelte';
 	import { getProjects } from '$lib/remote/projects.remote';
+	import type { DisplayProject } from '$lib/types';
 
 	let { data } = $props();
 
-	// Initialize with SSR data to prevent flicker, but allow refresh
-	let projects = $derived<any[]>(data.projects || []);
-	let isLoading = $state(false);
+	// --- State Management ---
+	// Initialize with SSR data, but keep it bindable/refreshable
+	let allProjects = $derived<DisplayProject[]>(data.projects || []);
+	let searchQuery = $state('');
+	let viewMode = $state<'grid' | 'list'>('grid');
+	let sortMode = $state<'featured' | 'stars' | 'updated'>('featured');
+	let sortDirection = $state<'asc' | 'desc'>('desc');
+	let isScrolled = $state(false);
 
+	// --- Side Effects ---
 	$effect(() => {
-		// Keep projects in sync with server data if it changes (e.g. navigation)
+		// Sync with server data if it changes
 		if (data.projects) {
-			projects = data.projects;
+			allProjects = data.projects;
 		}
 
-		console.log('[Homepage] Data session stats:', projects.length, 'modules active');
-
-		// If projects are still empty (shouldn't happen with SSR but safe check)
-		if (projects.length === 0) {
-			console.log('[Homepage] No projects found, performing late refresh...');
+		// Client-side fail-safe fetch
+		if (allProjects.length === 0) {
 			getProjects().then((p) => {
-				projects = p;
+				allProjects = p;
 			});
 		}
+
+		// Scroll listener for sticky header styling
+		const handleScroll = () => {
+			isScrolled = window.scrollY > 50;
+		};
+		window.addEventListener('scroll', handleScroll);
+		return () => window.removeEventListener('scroll', handleScroll);
 	});
 
-	const hero = $derived(projects.length > 0 ? projects[0] : null);
+	// --- Derived State (The shipyard logic) ---
 
-	const featuredStacks = $derived(
-		projects.slice(1).filter((p) => p.featured && !p.isCluster && !p.experimental)
+	const filteredList = $derived(
+		allProjects
+			.filter((p) => {
+				if (!searchQuery) return true;
+				const q = searchQuery.toLowerCase();
+				return (
+					p.name.toLowerCase().includes(q) ||
+					p.description?.toLowerCase().includes(q) ||
+					p.topics?.some((t) => t.toLowerCase().includes(q))
+				);
+			})
+			.sort((a, b) => {
+				const dir = sortDirection === 'asc' ? 1 : -1;
+
+				if (sortMode === 'stars') {
+					return (a.stars - b.stars) * dir;
+				}
+
+				if (sortMode === 'updated') {
+					return (new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()) * dir;
+				}
+
+				// Default 'featured': prioritize flagship/clusters, then date
+				// 1. Flagship
+				const flagshipDiff = Number(a.isFlagship || 0) - Number(b.isFlagship || 0);
+				if (flagshipDiff !== 0) return flagshipDiff * dir;
+
+				// 2. Featured
+				const featuredDiff = Number(a.featured || 0) - Number(b.featured || 0);
+				if (featuredDiff !== 0) return featuredDiff * dir;
+
+				// 3. Clusters (Fleets)
+				const clusterDiff = Number(a.isCluster || 0) - Number(b.isCluster || 0);
+				if (clusterDiff !== 0) return clusterDiff * dir;
+
+				// Tie-breaker: Date
+				return (new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()) * dir;
+			})
 	);
 
-	const groups = $derived(projects.slice(1).filter((p) => p.isCluster && !p.experimental));
-
-	const experimental = $derived(projects.slice(1).filter((p) => p.experimental));
-
-	const generalRegistry = $derived(
-		projects.slice(1).filter((p) => !p.featured && !p.isCluster && !p.experimental)
+	// The "Flagship" is the most prominent project (explicitly marked or fallback to first)
+	const flagship = $derived(
+		filteredList.find((p) => p.isFlagship) || (filteredList.length > 0 ? filteredList[0] : null)
 	);
+
+	// Helper to filter out the flagship from other lists to avoid duplication
+	const remainingProjects = $derived(filteredList.filter((p) => p.id !== flagship?.id));
+
+	// "Fleets" are project clusters (groups of repositories)
+	const fleets = $derived(remainingProjects.filter((p) => p.isCluster && !p.experimental));
+
+	// "Dry Dock" contains experimental or R&D projects
+	const dryDock = $derived(remainingProjects.filter((p) => p.experimental));
+
+	// "Cargo" / "Manifest" contains standard standalone projects
+	const cargo = $derived(remainingProjects.filter((p) => !p.isCluster && !p.experimental));
 </script>
 
 <svelte:head>
-	<title>Shipyard - Project Registry</title>
+	<title>Shipyard - Engineering Registry</title>
 	<meta
 		name="description"
-		content="Discover curated open-source projects and developer tools. A Mechanical Artisan registry showcasing innovative software solutions, frameworks, and applications."
-	/>
-	<meta
-		name="keywords"
-		content="open source, projects, developer tools, software registry, frameworks, applications"
-	/>
-	<link rel="canonical" href="https://shipyard.registry/" />
-	<meta property="og:title" content="Shipyard - Project Registry" />
-	<meta
-		property="og:description"
-		content="Discover curated open-source projects and developer tools. A Mechanical Artisan registry showcasing innovative software solutions."
-	/>
-	<meta property="og:type" content="website" />
-	<meta property="og:url" content="https://shipyard.registry/" />
-	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content="Shipyard - Project Registry" />
-	<meta
-		name="twitter:description"
-		content="Discover curated open-source projects and developer tools."
+		content="A curated mechanical artisan registry for high-performance engineering projects."
 	/>
 </svelte:head>
 
-{#snippet sectionHeader(title: string, tagline: string, icon: any, id: string)}
-	{@const Icon = icon}
-	<div {id} class="mb-8 space-y-4 pt-12">
-		<div class="flex items-center gap-3">
-			<div class="rounded-lg border border-slate-800 bg-secondary/50 p-2 text-primary shadow-inner">
-				<Icon class="size-5" />
-			</div>
-			<div class="space-y-1">
-				<h2 class="text-xl font-bold tracking-tight text-foreground uppercase md:text-2xl">
-					{title}
-				</h2>
-				<p class="font-mono text-xs tracking-wider text-muted-foreground uppercase opacity-70">
-					{tagline}
-				</p>
-			</div>
-		</div>
-		<Separator class="bg-linear-to-r from-primary/20 via-border to-transparent" />
-	</div>
-{/snippet}
-
-<div class="min-h-screen bg-background p-6 font-sans selection:bg-primary/20 md:p-12">
-	<header class="mb-12 space-y-8">
-		<div class="flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
-			<div class="space-y-3">
+<div class="min-h-screen bg-background pb-32">
+	<!-- CONTROL DECK (Sticky Header) -->
+	<header
+		class="sticky top-0 z-50 border-b transition-all duration-300 ease-out {isScrolled
+			? 'border-border bg-background/95 backdrop-blur-md'
+			: 'border-transparent bg-transparent'}"
+	>
+		<div class="container mx-auto px-4 py-4">
+			<div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+				<!-- Brand / Breadcrumb -->
 				<div class="flex items-center gap-3">
-					<div class="rounded-md border border-primary/20 bg-primary/10 p-2.5">
+					<div
+						class="flex size-10 items-center justify-center rounded-lg border border-border bg-card shadow-sm"
+					>
 						<Anchor class="size-6 text-primary" />
 					</div>
-					<h1 class="text-3xl font-extrabold tracking-tight text-foreground lg:text-5xl">
-						SHIPYARD
-					</h1>
+					<div>
+						<h1 class="text-lg font-bold tracking-tight text-foreground">SHIPYARD</h1>
+						<div class="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+							<span class="tracking-widest uppercase">REGISTRY</span>
+							<span class="h-1 w-1 rounded-full bg-muted"></span>
+							<span class="font-mono text-primary">v2.0.0</span>
+						</div>
+					</div>
 				</div>
-				<p class="max-w-2xl text-lg font-light text-muted-foreground">
-					Engineering Manifest <span class="mx-2 font-mono text-sm text-primary/50">//</span> 2025-2026
-				</p>
-			</div>
 
-			<div
-				class="flex items-center gap-2 rounded-lg border border-border bg-card/30 p-3 font-mono text-xs text-muted-foreground backdrop-blur-sm md:gap-4 md:text-sm"
-			>
-				<div class="flex items-center gap-2 border-r border-border/50 px-2 pr-4">
-					<Activity class="size-4 animate-pulse text-green-500" />
-					<span>SYSTEM NORMAL</span>
-				</div>
-				<div class="px-2">
-					<span class="font-bold text-foreground">{projects.length}</span> MODULES ACTIVE
+				<!-- Search & Controls -->
+				<div class="flex w-full flex-wrap items-center gap-3 md:w-auto md:flex-nowrap">
+					<div class="relative w-full md:w-64">
+						<Search class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+						<input
+							type="text"
+							placeholder="Search manifest..."
+							bind:value={searchQuery}
+							class="h-10 w-full rounded-md border border-border bg-secondary/30 pr-4 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
+						/>
+					</div>
+
+					<!-- Sort Controls -->
+					<div class="flex items-center gap-1 rounded-md border border-border bg-secondary/30 p-1">
+						<button
+							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
+							class:bg-accent={sortMode === 'featured'}
+							class:text-primary={sortMode === 'featured'}
+							class:text-muted-foreground={sortMode !== 'featured'}
+							onclick={() => (sortMode = 'featured')}
+							aria-label="Sort by Featured"
+							title="Sort by Featured"
+						>
+							<Sparkles class="size-3" />
+							<span class="hidden lg:inline">Featured</span>
+						</button>
+						<button
+							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
+							class:bg-accent={sortMode === 'stars'}
+							class:text-primary={sortMode === 'stars'}
+							class:text-muted-foreground={sortMode !== 'stars'}
+							onclick={() => (sortMode = 'stars')}
+							aria-label="Sort by Stars"
+							title="Sort by Stars"
+						>
+							<Activity class="size-3" />
+							<span class="hidden lg:inline">Stars</span>
+						</button>
+						<button
+							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
+							class:bg-accent={sortMode === 'updated'}
+							class:text-primary={sortMode === 'updated'}
+							class:text-muted-foreground={sortMode !== 'updated'}
+							onclick={() => (sortMode = 'updated')}
+							aria-label="Sort by Date"
+							title="Sort by Date"
+						>
+							<Calendar class="size-3" />
+							<span class="hidden lg:inline">Date</span>
+						</button>
+
+						<Separator orientation="vertical" class="mx-1 h-4" />
+
+						<button
+							class="flex items-center justify-center rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
+							onclick={() => (sortDirection = sortDirection === 'asc' ? 'desc' : 'asc')}
+							aria-label={sortDirection === 'asc' ? 'Ascending' : 'Descending'}
+							title={sortDirection === 'asc' ? 'Ascending' : 'Descending'}
+						>
+							{#if sortDirection === 'asc'}
+								<ArrowUp class="size-3 text-muted-foreground" />
+							{:else}
+								<ArrowDown class="size-3 text-muted-foreground" />
+							{/if}
+						</button>
+					</div>
+
+					<div class="flex rounded-md border border-border bg-secondary/30 p-1">
+						<button
+							class="rounded px-2 py-1 transition-colors hover:bg-accent/50"
+							class:bg-accent={viewMode === 'grid'}
+							class:text-primary={viewMode === 'grid'}
+							class:text-muted-foreground={viewMode !== 'grid'}
+							onclick={() => (viewMode = 'grid')}
+							aria-label="Grid view"
+						>
+							<LayoutGrid class="size-4" />
+						</button>
+						<button
+							class="rounded px-2 py-1 transition-colors hover:bg-accent/50"
+							class:bg-accent={viewMode === 'list'}
+							class:text-primary={viewMode === 'list'}
+							class:text-muted-foreground={viewMode !== 'list'}
+							onclick={() => (viewMode = 'list')}
+							aria-label="List view"
+						>
+							<List class="size-4" />
+						</button>
+					</div>
 				</div>
 			</div>
 		</div>
-
-		<div
-			class="flex items-center gap-4 pl-1 font-mono text-xs tracking-widest text-muted-foreground/60 uppercase"
-		>
-			<span>Registry v2.0</span>
-			<span class="text-primary/20">•</span>
-			<span>Secure Connection</span>
-			<span class="text-primary/20">•</span>
-			<span>Verified Builds Only</span>
-		</div>
-
-		<Separator class="bg-linear-to-r from-primary/30 to-transparent" />
 	</header>
 
-	<div id="projects" class="space-y-24">
-		<!-- Hero Section -->
-		{#if hero}
-			<div
-				class="relative overflow-hidden rounded-2xl border border-primary/20 bg-card/60 p-8 shadow-2xl backdrop-blur-md transition-all hover:border-primary/40 md:p-12"
-			>
-				<div
-					class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-primary/10 via-background to-background"
-				></div>
-				<div class="grid gap-8 lg:grid-cols-2">
-					<div class="space-y-6">
-						<div class="space-y-2">
-							<Badge class="bg-primary text-primary-foreground hover:bg-primary/90"
-								>LATEST DEPLOYMENT</Badge
-							>
-							<h2
-								class="text-4xl font-black tracking-tighter text-foreground sm:text-5xl md:text-6xl"
-							>
-								{hero.name}
-							</h2>
-						</div>
-						<p class="max-w-xl text-lg text-muted-foreground selection:bg-primary/10">
-							{hero.description}
-						</p>
-						<div class="flex flex-wrap gap-2">
-							{#each hero.topics as topic}
-								<Badge variant="secondary" class="font-mono text-xs">{topic}</Badge>
-							{/each}
-						</div>
-						<a
-							href="/projects/{hero.id}"
-							class="group inline-flex items-center gap-2 text-sm font-semibold text-primary transition-all hover:gap-3"
+	<main class="container mx-auto mt-8 space-y-16 px-4">
+		<!-- SECTION: FLAGSHIP -->
+		{#if flagship}
+			<section in:fade={{ duration: 400 }}>
+				<div class="mb-6 flex items-center justify-between border-b border-border/40 pb-4">
+					<h2 class="text-xl font-black tracking-tighter text-foreground uppercase">
+						Flagship Vessel
+					</h2>
+					<span class="font-mono text-[10px] text-muted-foreground">
+						REF:<span class="ml-1 font-bold text-primary"
+							>{flagship.id.split('-')[0].toUpperCase()}</span
 						>
-							View Mission Details <ArrowRight class="size-4" />
-						</a>
-					</div>
+					</span>
 				</div>
-			</div>
+				<div
+					class="group relative overflow-hidden rounded-xl border border-border bg-card p-1 shadow-2xl transition-all hover:border-border/80"
+				>
+					<!-- Flagship styling is custom, distinct from standard cards -->
+					<div
+						class="relative z-10 grid gap-8 overflow-hidden rounded-lg bg-muted/40 p-6 md:grid-cols-2 lg:p-12 dark:bg-secondary/50"
+					>
+						<div class="flex flex-col justify-center space-y-6">
+							<div class="space-y-4">
+								<Badge variant="outline" class="w-fit border-primary/50 text-primary">
+									FEATURED VESSEL
+								</Badge>
+								<h2
+									class="text-4xl font-extrabold tracking-tighter text-foreground md:text-5xl lg:text-6xl"
+								>
+									{flagship.name}
+								</h2>
+								<p class="max-w-xl text-lg text-muted-foreground">
+									{flagship.description}
+								</p>
+							</div>
+
+							<div class="flex flex-wrap gap-2">
+								{#each flagship.topics as topic (topic)}
+									<Badge class="bg-muted/80 text-muted-foreground hover:bg-muted">{topic}</Badge>
+								{/each}
+							</div>
+
+							<div class="pt-4">
+								<Button size="lg" class="group/btn gap-2" href="/projects/{flagship.id}">
+									Initialize
+									<ArrowRight class="size-4 transition-transform group-hover/btn:translate-x-1" />
+								</Button>
+							</div>
+						</div>
+
+						<div
+							class="relative flex items-center justify-center rounded-xl border border-border/30 bg-background/50 p-8 dark:border-transparent dark:shadow-inner"
+						>
+							<!-- Lordicon Flagship Visual -->
+							<div
+								class="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent"
+							></div>
+
+							<Lordicon
+								src="https://cdn.lordicon.com/prjriwwv.json"
+								primaryColor="#d46211"
+								secondaryColor="#475569"
+								loopAfterIn={true}
+								delay={500}
+								size={450}
+								height={550}
+							/>
+						</div>
+					</div>
+
+					<!-- Mechanical Background Elements -->
+					<div
+						class="absolute -top-20 -right-20 z-0 h-96 w-96 rounded-full border border-primary/10 bg-primary/5 blur-3xl dark:border-border/50 dark:bg-secondary/20"
+					></div>
+				</div>
+			</section>
 		{/if}
 
-		<div class="space-y-24">
-			<!-- Featured Stacks -->
-			{#if featuredStacks.length > 0}
-				<section>
-					{@render sectionHeader(
-						'Featured Stacks',
-						'High-impact engineering modules',
-						Sparkles,
-						'featured'
-					)}
-					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-						{#each featuredStacks as project (project.id)}
-							<ProjectCard {project} />
-						{/each}
-					</div>
-				</section>
-			{/if}
-
-			<!-- Groups -->
-			{#if groups.length > 0}
-				<section>
-					{@render sectionHeader('Groups', 'Multi-repo ecosystems & toolchains', Boxes, 'groups')}
-					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-						{#each groups as project (project.id)}
-							<ProjectCard {project} />
-						{/each}
-					</div>
-				</section>
-			{/if}
-
-			<!-- Experimental -->
-			{#if experimental.length > 0}
-				<section>
-					{@render sectionHeader(
-						'Experimental',
-						'Research, prototypes & early-stage builds',
-						Beaker,
-						'experimental'
-					)}
-					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-						{#each experimental as project (project.id)}
-							<ProjectCard {project} />
-						{/each}
-					</div>
-				</section>
-			{/if}
-
-			<!-- General Registry -->
-			{#if generalRegistry.length > 0}
-				<section>
-					{@render sectionHeader(
-						'Project Registry',
-						'General purpose tools & utilities',
-						Cpu,
-						'registry'
-					)}
-					<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-						{#each generalRegistry as project (project.id)}
-							<ProjectCard {project} />
-						{/each}
-					</div>
-				</section>
-			{/if}
-
-			<!-- Platform Sections (Placeholders based on Footer) -->
-			<div class="grid grid-cols-1 gap-8 pt-12 lg:grid-cols-3">
-				<section
-					id="about"
-					class="group space-y-4 rounded-xl border border-slate-800 bg-card/30 p-6 backdrop-blur-sm transition-all hover:border-primary/30"
-				>
-					<div class="flex items-center gap-3 text-primary">
-						<Network class="size-5" />
-						<h3 class="font-bold tracking-tight uppercase">Architecture</h3>
-					</div>
-					<p class="text-sm leading-relaxed text-muted-foreground">
-						High-performance SvelteKit 5 architecture using ISR caching and a hybrid data layer for
-						real-time repository analysis.
-					</p>
-				</section>
-
-				<section
-					id="docs"
-					class="group space-y-4 rounded-xl border border-slate-800 bg-card/30 p-6 backdrop-blur-sm transition-all hover:border-primary/30"
-				>
-					<div class="flex items-center gap-3 text-primary">
-						<BookOpen class="size-5" />
-						<h3 class="font-bold tracking-tight uppercase">Blueprint</h3>
-					</div>
-					<p class="text-sm leading-relaxed text-muted-foreground">
-						The Mechanical Artisan design system. Detailed technical specifications and
-						implementation patterns for the Shipyard registry.
-					</p>
-				</section>
-
-				<section
-					id="legal"
-					class="group space-y-4 rounded-xl border border-slate-800 bg-card/30 p-6 backdrop-blur-sm transition-all hover:border-primary/30"
-				>
-					<div class="flex items-center gap-3 text-primary">
-						<Shield class="size-5" />
-						<h3 class="font-bold tracking-tight uppercase">System Status</h3>
-					</div>
-					<div
-						class="flex w-fit items-center gap-2 rounded bg-emerald-500/10 px-2 py-1 font-mono text-xs text-emerald-500"
+		<!-- SECTION: THE FLEET (Clusters) -->
+		{#if fleets.length > 0}
+			<section>
+				<div class="mb-8 flex items-center gap-3 border-b border-border pb-4">
+					<Lordicon
+						src="https://cdn.lordicon.com/ggphewkj.json"
+						primaryColor="#d46211"
+						secondaryColor="#475569"
+						loopAfterIn={true}
+						delay={300}
+						size={50}
+						height={50}
+						target="div"
+						trigger="hover"
+					/>
+					<h3 class="text-xl font-bold tracking-tight text-foreground uppercase">Active Fleets</h3>
+					<span class="ml-auto font-mono text-xs text-muted-foreground"
+						>{fleets.length} FORMATIONS</span
 					>
-						<Activity class="size-3 animate-pulse" />
-						CORE MODULES ONLINE
-					</div>
-					<p class="text-sm leading-relaxed text-muted-foreground">
-						Continuous verification of GitHub API connectivity and build integrity across all
-						registered project clusters.
-					</p>
-				</section>
-			</div>
-
-			<!-- Empty State if strict filter removes everything -->
-			{#if projects.length === 0}
-				<div
-					class="col-span-full space-y-4 rounded-xl border-2 border-dashed border-border/50 py-20 text-center"
-				>
-					<Terminal class="mx-auto size-10 text-muted-foreground" />
-					<h3 class="text-xl font-bold text-muted-foreground">No Active Modules Detected</h3>
-					<p class="text-muted-foreground/70">System filters are hiding older projects.</p>
 				</div>
-			{/if}
-		</div>
-	</div>
+				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+					{#each fleets as project, i (project.id)}
+						<div in:fly={{ y: 20, delay: i * 50, duration: 400 }}>
+							<ProjectCard {project} />
+						</div>
+					{/each}
+				</div>
+			</section>
+		{/if}
+
+		<!-- SECTION: DRY DOCK (Experimental) -->
+		{#if dryDock.length > 0}
+			<section
+				class="relative overflow-hidden rounded-xl border border-amber-300/40 bg-amber-50/50 px-6 py-8 dark:border-yellow-900/20 dark:bg-yellow-950/5"
+			>
+				<div
+					class="absolute top-0 left-0 h-full w-1 bg-linear-to-b from-amber-500/50 to-transparent dark:from-yellow-600/50"
+				></div>
+				<div class="mb-8 flex items-center gap-3">
+					<Compass class="size-5 text-amber-600 dark:text-yellow-500" />
+					<h3
+						class="text-xl font-bold tracking-tight text-amber-700 uppercase dark:text-yellow-500/90"
+					>
+						Dry Dock
+					</h3>
+					<span class="ml-auto font-mono text-xs text-amber-600/80 dark:text-yellow-600/60"
+						>{dryDock.length} R&D UNITS</span
+					>
+				</div>
+				<div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+					{#each dryDock as project, i (project.id)}
+						<div in:fly={{ y: 20, delay: i * 50, duration: 400 }}>
+							<ProjectCard {project} />
+						</div>
+					{/each}
+				</div>
+			</section>
+		{/if}
+
+		<!-- SECTION: MANIFEST (Standard Cargo) -->
+		{#if cargo.length > 0}
+			<section>
+				<div class="mb-8 flex items-center gap-3 border-b border-border pb-4">
+					<Lordicon
+						src="https://cdn.lordicon.com/rezibkiy.json"
+						primaryColor="#d46211"
+						secondaryColor="#475569"
+						loopAfterIn={true}
+						delay={300}
+						size={50}
+						height={50}
+						target="div"
+						trigger="hover"
+					/>
+					<h3 class="text-xl font-bold tracking-tight text-foreground uppercase">
+						Vessel Manifest
+					</h3>
+					<span class="ml-auto font-mono text-xs text-muted-foreground">{cargo.length} UNITS</span>
+				</div>
+
+				{#if viewMode === 'grid'}
+					<div
+						class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+						in:fly={{ y: 20, duration: 300 }}
+					>
+						{#each cargo as project (project.id)}
+							<ProjectCard {project} />
+						{/each}
+					</div>
+				{:else}
+					<div class="space-y-2" in:fly={{ y: 20, duration: 300 }}>
+						{#each cargo as project (project.id)}
+							<div
+								class="flex items-center justify-between rounded-lg border border-border bg-card/50 p-4 transition-colors hover:border-primary/30"
+							>
+								<div class="flex items-center gap-4">
+									<div
+										class="flex size-10 items-center justify-center rounded bg-secondary/50 font-mono text-xs text-muted-foreground"
+									>
+										{project.name.slice(0, 2).toUpperCase()}
+									</div>
+									<div>
+										<h4 class="font-bold text-foreground">{project.name}</h4>
+										<p class="text-xs text-muted-foreground">{project.description}</p>
+									</div>
+								</div>
+								<div class="flex items-center gap-4">
+									<div class="hidden items-center gap-1 text-xs text-muted-foreground md:flex">
+										<Star class="size-3" />
+										{project.stars}
+									</div>
+									<Button variant="ghost" size="sm" href="/projects/{project.id}">Inspect</Button>
+								</div>
+							</div>
+						{/each}
+					</div>
+				{/if}
+			</section>
+		{/if}
+	</main>
 </div>

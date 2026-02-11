@@ -8,6 +8,22 @@ declare global {
 		// interface PageState {}
 		// interface Platform {}
 	}
+
+	namespace svelteHTML {
+		interface IntrinsicElements {
+			'lord-icon': {
+				src?: string;
+				trigger?: string;
+				delay?: string | number;
+				colors?: string;
+				style?: string;
+				class?: string;
+				target?: string;
+				stroke?: string | number;
+				state?: string;
+			};
+		}
+	}
 }
 
 export {};

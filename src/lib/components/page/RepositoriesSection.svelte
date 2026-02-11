@@ -49,7 +49,7 @@
 	{:else if isLoading}
 		<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 			{#each Array(3) as _}
-				<div class="h-64 animate-pulse rounded-lg border border-slate-800 bg-slate-900/50"></div>
+				<div class="h-64 animate-pulse rounded-lg border border-border bg-secondary/50"></div>
 			{/each}
 		</div>
 	{:else if repos.length === 0}
@@ -60,7 +60,7 @@
 		<div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 			{#each repos as repo (repo.id)}
 				<Card
-					class="group relative overflow-hidden border-slate-800 bg-card/60 backdrop-blur-sm transition-all hover:border-primary/40 hover:bg-card/80 hover:shadow-lg"
+					class="group relative overflow-hidden border-border bg-card/60 backdrop-blur-sm transition-all hover:border-primary/40 hover:bg-card/80 hover:shadow-lg"
 				>
 					<div
 						class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-0 transition-opacity group-hover:opacity-100"
