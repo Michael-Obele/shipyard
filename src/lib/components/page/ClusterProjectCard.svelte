@@ -1,8 +1,9 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
+	import { Badge } from '$lib/components/ui/badge';
 	import type { DisplayProject } from '$lib/types';
-	import { Container, ArrowRight, CalendarDays, Star } from '@lucide/svelte';
+	import { Container, ArrowRight, CalendarDays, Star, Sparkles, TrendingUp } from '@lucide/svelte';
 	import * as HoverCard from '$lib/components/ui/hover-card';
 
 	let { project }: { project: DisplayProject } = $props();
@@ -49,9 +50,29 @@
 
 			<!-- ═══ TITLE ZONE ═══ -->
 			<Card.Header class="rounded-none pb-2">
-				<Card.Title class="font-mono text-xl leading-tight font-black tracking-tight">
-					{project.name}
-				</Card.Title>
+				<div class="flex items-start justify-between">
+					<Card.Title class="font-mono text-xl leading-tight font-black tracking-tight">
+						{project.name}
+					</Card.Title>
+					<div class="flex flex-col items-end gap-1">
+						{#if project.isNew}
+							<Badge
+								class="rounded-none border-white/20 bg-white/10 px-1.5 py-0 font-mono text-[9px] font-bold tracking-wider text-white hover:bg-white/20"
+							>
+								<Sparkles class="mr-1 size-2.5" />
+								NEW
+							</Badge>
+						{/if}
+						{#if project.isTrending}
+							<Badge
+								class="rounded-none border-white/20 bg-white/10 px-1.5 py-0 font-mono text-[9px] font-bold tracking-wider text-white hover:bg-white/20"
+							>
+								<TrendingUp class="mr-1 size-2.5" />
+								TRENDING
+							</Badge>
+						{/if}
+					</div>
+				</div>
 			</Card.Header>
 
 			<!-- ═══ CONTENT ═══ -->

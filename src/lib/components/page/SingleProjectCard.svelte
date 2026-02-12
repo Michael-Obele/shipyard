@@ -2,7 +2,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import type { DisplayProject } from '$lib/types';
-	import { Terminal, Star, ChevronRight } from '@lucide/svelte';
+	import { Terminal, Star, ChevronRight, Sparkles, TrendingUp } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	let { project }: { project: DisplayProject } = $props();
@@ -60,16 +60,32 @@
 							>{project.name}</Card.Title
 						>
 					</div>
-					{#if typeLabel}
-						<Badge
-							variant="outline"
-							class="shrink-0 rounded-none border-foreground/15 px-1.5 py-0 font-mono text-[10px] tracking-widest text-muted-foreground"
-						>
-							{typeLabel}
-						</Badge>
-					{:else if project.featured}
-						<div class="size-1.5 shrink-0 rounded-full bg-primary"></div>
-					{/if}
+					<div class="flex items-center gap-1.5">
+						{#if project.isNew}
+							<Badge
+								class="rounded-none border-primary/20 bg-primary/10 px-1.5 py-0 font-mono text-[9px] font-bold tracking-wider text-primary hover:bg-primary/20"
+							>
+								<Sparkles class="mr-1 size-2.5" />
+								NEW
+							</Badge>
+						{/if}
+						{#if project.isTrending}
+							<Badge
+								class="rounded-none border-orange-500/20 bg-orange-500/10 px-1.5 py-0 font-mono text-[9px] font-bold tracking-wider text-orange-500 hover:bg-orange-500/20"
+							>
+								<TrendingUp class="mr-1 size-2.5" />
+								TRENDING
+							</Badge>
+						{/if}
+						{#if typeLabel}
+							<Badge
+								variant="outline"
+								class="shrink-0 rounded-none border-foreground/15 px-1.5 py-0 font-mono text-[10px] tracking-widest text-muted-foreground"
+							>
+								{typeLabel}
+							</Badge>
+						{/if}
+					</div>
 				</div>
 			</Card.Header>
 

@@ -23,7 +23,10 @@
 		Star,
 		Rocket,
 		ChevronRight,
-		Tags
+		Tags,
+		Sparkles,
+		TrendingUp,
+		Flame
 	} from 'lucide-svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -41,6 +44,7 @@
 	let searchQuery = $state('');
 	let viewMode = $state<'grid' | 'list'>('grid');
 	let sortMode = $state<'name' | 'stars' | 'updated' | 'type'>('name');
+	let filterMode = $state<'all' | 'new' | 'trending'>('all');
 	let sortDirection = $state<'asc' | 'desc'>('asc');
 	let isScrolled = $state(false);
 
@@ -71,13 +75,20 @@
 	const filteredList = $derived(
 		allProjects
 			.filter((p) => {
-				if (!searchQuery) return true;
+				// Search Query Filter
 				const q = searchQuery.toLowerCase();
-				return (
+				const matchesSearch =
+					!searchQuery ||
 					p.name.toLowerCase().includes(q) ||
 					p.description?.toLowerCase().includes(q) ||
-					p.topics?.some((t) => t.toLowerCase().includes(q))
-				);
+					p.topics?.some((t) => t.toLowerCase().includes(q));
+
+				// Feature Filter
+				let matchesFilter = true;
+				if (filterMode === 'new') matchesFilter = !!p.isNew;
+				if (filterMode === 'trending') matchesFilter = !!p.isTrending;
+
+				return matchesSearch && matchesFilter;
 			})
 			.sort((a, b) => {
 				const dir = sortDirection === 'asc' ? 1 : -1;
@@ -147,8 +158,6 @@
 						<h1 class="text-lg font-bold tracking-tight text-foreground">SHIPYARD</h1>
 						<div class="flex items-center gap-2 text-xs font-medium text-muted-foreground">
 							<span class="tracking-widest uppercase">REGISTRY</span>
-							<span class="h-1 w-1 rounded-full bg-muted"></span>
-							<span class="font-mono text-primary">v2.0.0</span>
 						</div>
 					</div>
 				</div>
@@ -163,6 +172,40 @@
 							bind:value={searchQuery}
 							class="h-10 w-full rounded-md border border-border bg-secondary/30 pr-4 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
 						/>
+					</div>
+
+					<!-- Filter Controls -->
+					<div class="flex items-center gap-1 rounded-md border border-border bg-secondary/30 p-1">
+						<button
+							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all hover:bg-black/10 dark:hover:bg-white/5"
+							class:bg-background={filterMode === 'all'}
+							class:shadow-sm={filterMode === 'all'}
+							class:text-foreground={filterMode === 'all'}
+							class:text-muted-foreground={filterMode !== 'all'}
+							onclick={() => (filterMode = 'all')}
+						>
+							ALL
+						</button>
+						<button
+							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all hover:bg-black/10 dark:hover:bg-white/5"
+							class:bg-primary={filterMode === 'new'}
+							class:text-primary-foreground={filterMode === 'new'}
+							class:text-muted-foreground={filterMode !== 'new'}
+							onclick={() => (filterMode = 'new')}
+						>
+							<Sparkles class="size-3" />
+							NEW
+						</button>
+						<button
+							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all hover:bg-black/10 dark:hover:bg-white/5"
+							class:bg-orange-500={filterMode === 'trending'}
+							class:text-white={filterMode === 'trending'}
+							class:text-muted-foreground={filterMode !== 'trending'}
+							onclick={() => (filterMode = 'trending')}
+						>
+							<TrendingUp class="size-3" />
+							TRENDING
+						</button>
 					</div>
 
 					<!-- Sort Controls -->
@@ -267,11 +310,29 @@
 					<h2 class="text-xl font-black tracking-tighter text-foreground uppercase">
 						Flagship Vessel
 					</h2>
-					<span class="font-mono text-[10px] text-muted-foreground">
-						REF:<span class="ml-1 font-bold text-primary"
-							>{flagship.id.split('-')[0].toUpperCase()}</span
-						>
-					</span>
+					<div class="flex items-center gap-3">
+						{#if flagship.isNew}
+							<Badge
+								class="rounded-none border-primary/20 bg-primary/10 px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider text-primary"
+							>
+								<Sparkles class="mr-1.5 size-3" />
+								NEW
+							</Badge>
+						{/if}
+						{#if flagship.isTrending}
+							<Badge
+								class="rounded-none border-orange-500/20 bg-orange-500/10 px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider text-orange-500"
+							>
+								<TrendingUp class="mr-1.5 size-3" />
+								TRENDING
+							</Badge>
+						{/if}
+						<span class="font-mono text-[10px] text-muted-foreground">
+							REF:<span class="ml-1 font-bold text-primary"
+								>{flagship.id.split('-')[0].toUpperCase()}</span
+							>
+						</span>
+					</div>
 				</div>
 				<div
 					class="group relative overflow-hidden rounded-xl border border-border bg-card p-1 shadow-2xl transition-all hover:border-border/80"

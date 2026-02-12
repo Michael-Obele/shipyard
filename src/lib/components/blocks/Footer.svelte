@@ -134,7 +134,7 @@
 					</div>
 					<div class="flex items-center justify-between border-b border-border pb-2">
 						<span>Registry</span>
-						<span class="font-mono text-foreground">v2.0.0</span>
+						<span class="font-mono text-foreground uppercase">ACTIVE</span>
 					</div>
 					<p class="pt-2 text-[10px] leading-relaxed uppercase opacity-60">
 						&copy; {new Date().getFullYear()} Shipyard. <br />

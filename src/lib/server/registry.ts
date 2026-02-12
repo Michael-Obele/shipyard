@@ -241,9 +241,20 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 
 	// 5. Filter & Sort
 	const CUTOFF_DATE = new Date('2025-01-01T00:00:00Z');
+	const NOW = new Date();
+	const FOURTEEN_DAYS_AGO = new Date(NOW.getTime() - 14 * 24 * 60 * 60 * 1000);
+	const THIRTY_DAYS_AGO = new Date(NOW.getTime() - 30 * 24 * 60 * 60 * 1000);
 
 	const sortedProjects = displayProjects
 		.filter((p) => new Date(p.updatedAt) >= CUTOFF_DATE)
+		.map((p) => {
+			const updatedAt = new Date(p.updatedAt);
+			return {
+				...p,
+				isNew: updatedAt >= FOURTEEN_DAYS_AGO,
+				isTrending: p.stars >= 3 && updatedAt >= THIRTY_DAYS_AGO
+			};
+		})
 		.sort((a, b) => {
 			if (a.featured && !b.featured) return -1;
 			if (!a.featured && b.featured) return 1;
