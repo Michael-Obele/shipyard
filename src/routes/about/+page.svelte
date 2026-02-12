@@ -28,59 +28,59 @@
 
 	const evolution = [
 		{
-			year: '2023-2024',
-			title: 'Intelligence Filtering',
+			year: 'The Problem',
+			title: 'Distributed Noise',
 			description:
-				'I realized that data without metadata is just noise. Building MCP servers like shadcn-svelte-mcp and tauri-docs was my first step in creating high-fidelity filters for agentic workflows.',
-			evidence: ['shadcn-svelte-mcp', 'tauri-docs', 'SvelteKit API Gen'],
-			icon: Brain
+				'I had projects scattered across GitHub, dispersed local folders, and forgotten branches. As a Network Developer, I know that you cannot manage what you cannot see. 30+ repositories meant zero visibility.',
+			evidence: ['Fragmented Repos', 'Lost Concepts', 'No central status'],
+			icon: ListFilter
 		},
 		{
-			year: '2024',
-			title: 'Performance Signaling',
+			year: 'The Need',
+			title: 'Status & Signal',
 			description:
-				'To move fast, I needed better primitives. Cinder was born from the need to turn massive web data into clean, structured signals using Go and Svelte 5.',
-			evidence: ['cinder-sv (Svelte)', 'cinder-go', 'Concurrent Scrapers'],
-			icon: Zap
+				'I needed a way to instantly see what is new, what is trending, and what is core infrastructure. I needed a dashboard, not just a list.',
+			evidence: ['Status Tracking', 'Trend Monitoring', 'Freshness'],
+			icon: Activity
 		},
 		{
-			year: 'Current',
-			title: 'The Final Registry',
+			year: 'The Solution',
+			title: 'Shipyard Registry',
 			description:
-				'Shipyard is the single, focused surface I needed to organize my thoughts and progress. It is the realization of a personal registry where only the highest signal work remains.',
-			evidence: ['Shipyard Core', 'Registry YAML', 'Artesian System Design'],
+				'Shipyard is the solution. A single, unified surface where every project is indexed, tracked, and showcased. It is the control plane for my engineering output.',
+			evidence: ['Unified Feed', 'Visual Status', 'Central Control'],
 			icon: Anchor
 		}
 	];
 
 	const pillars = [
 		{
-			title: 'Curation over Volume',
+			title: 'Total Visibility',
 			description:
-				'30+ repositories is noise. 5 high-impact projects is a career. Shipyard is the filter that ensures clarity over clutter.',
-			icon: ListFilter,
+				'The primary goal involves putting all projects in one place. If it exists, it must be indexed here. No hidden work.',
+			icon: Focus,
+			color: 'text-primary'
+		},
+		{
+			title: 'Network Logic',
+			description:
+				'I am still a Network Developer at heart. I view this registry as a network map—monitoring the health, status, and connectivity of my work.',
+			icon: Network,
 			color: 'text-blue-500'
 		},
 		{
-			title: 'Logical Substrate',
+			title: 'Trend Awareness',
 			description:
-				"My Network Engineering foundation isn't a distraction; it's the logic. I view code through the lens of packet flow and secure architecture.",
-			icon: Shield,
-			color: 'text-emerald-500'
-		},
-		{
-			title: 'Systems Sincerity',
-			description:
-				'I prefer tools that are honest about their function. Low latency, high performance, and zero abstraction where it matters most.',
-			icon: Activity,
+				'Knowing what is "trending" or "new" is vital for prioritization. Shipyard highlights momentum so I know where to focus resources.',
+			icon: Signal,
 			color: 'text-amber-500'
 		},
 		{
-			title: 'High Fidelity',
+			title: 'Structural Sincerity',
 			description:
-				'Software should be agentic-ready and human-legible. Every commit is an exercise in turning chaos into defined logic.',
-			icon: Focus,
-			color: 'text-primary'
+				"We don't hide the mechanics. We celebrate the grid and the data. Honesty in every pixel, just like a well-structured packet.",
+			icon: CircuitBoard,
+			color: 'text-emerald-500'
 		}
 	];
 
@@ -179,15 +179,15 @@
 			>The Engineering Registry</Badge
 		>
 		<h1 class="mb-8 text-5xl font-black tracking-tighter text-balance md:text-8xl">
-			SIGNAL OVER <br class="hidden md:block" />
+			THE CENTRAL <br class="hidden md:block" />
 			<span class="bg-linear-to-r from-primary to-indigo-400 bg-clip-text text-transparent"
-				>VOLUME</span
+				>REGISTRY</span
 			>
 		</h1>
 		<p class="mx-auto max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
-			I realized that having <span class="font-bold text-foreground">30+ public repositories</span>
-			on GitHub was causing me more confusion than clarity. Shipyard is my answer—a single, focused surface
-			to organize my thoughts, my tech stacks, and my progress.
+			My main goal is simple: <strong>put all my projects in one place.</strong>
+			Shipyard is the unified dashboard where I can see, showcase, and track my engineering output—instantly
+			knowing what is new, what is trending, and what matters.
 		</p>
 	</section>
 
@@ -201,30 +201,31 @@
 			>
 				<div class="space-y-6">
 					<div class="flex items-center gap-3 text-indigo-400">
-						<ListFilter class="size-6" />
-						<h2 class="text-2xl font-bold tracking-tight">The Curation Thesis</h2>
+						<Network class="size-6" />
+						<h2 class="text-2xl font-bold tracking-tight">The Network Dev POV</h2>
 					</div>
 					<h3 class="text-4xl font-black tracking-tighter">
-						From Noise <br /><span class="text-muted-foreground">To High-Fidelity Signal</span>
+						From Network Map <br /><span class="text-muted-foreground">To Project Dashboard</span>
 					</h3>
 					<div class="space-y-4 leading-relaxed text-muted-foreground">
 						<p>
-							Without curation, projects I cared about—like <span
-								class="font-semibold text-foreground italic">Cinder</span
-							>—were getting buried under forks, experiments, and technical debt. I needed a system
-							that didn't just store code, but demonstrated its purpose.
+							I am still a <strong>Network Developer</strong>. In my trade, if you can't monitor a
+							node, you can't manage it. I realized I was flying blind with my own software
+							projects—scattered across repos, hidden in folders.
 						</p>
 						<p>
-							Shipyard is where my <strong>Systems Thinking</strong> (informed by my background in
-							Network Engineering) meets the <strong>Intelligence Layer</strong> of modern software. It
-							is a living inventory designed to transform chaos into logic.
+							Shipyard applies that same network monitoring philosophy to my codebase. It is
+							designed to answer simple but critical questions: <em
+								>"What is active? What is trending? Where should I focus next?"</em
+							>
 						</p>
 					</div>
 					<div class="flex items-center gap-4 pt-4">
 						<div class="h-12 w-1 rounded-full bg-primary/50"></div>
 						<p class="text-sm font-medium text-muted-foreground italic">
-							"I am building a <span class="text-foreground">Personal Engine for Clarity</span>, not
-							just another portfolio."
+							"It's about visibility. Seeing the entire network of my work in <span
+								class="text-foreground">one single view</span
+							>."
 						</p>
 					</div>
 				</div>
@@ -284,8 +285,8 @@
 				</p>
 			</div>
 			<div class="hidden text-right font-mono text-xs text-muted-foreground md:block">
-				v4.0.0 // PRODUCTION_READY <br />
-				CORE_SYSTEMS: ACTIVE
+				SYSTEM_STATUS: ONLINE <br />
+				MONITORING: ACTIVE
 			</div>
 		</div>
 
@@ -294,7 +295,7 @@
 				{#each evolution as step, i}
 					<Accordion.Item
 						value="step-{i + 1}"
-						class="mb-4 overflow-hidden rounded-xl border border-border bg-card/30 backdrop-blur-sm transition-all hover:bg-card/50"
+						class="mb-4 rounded-xl border border-border bg-card/30 backdrop-blur-sm transition-all hover:bg-card/50"
 					>
 						<Accordion.Trigger class="px-6 py-8 hover:no-underline">
 							<div class="flex items-center gap-6 text-left">
@@ -305,7 +306,7 @@
 								</div>
 								<div>
 									<div class="font-mono text-[10px] tracking-widest text-primary uppercase">
-										{step.year} // STEP 0{i + 1}
+										{step.year} // 0{i + 1}
 									</div>
 									<h3 class="text-2xl font-bold tracking-tight">{step.title}</h3>
 								</div>
@@ -413,7 +414,7 @@
 						{/each}
 					</div>
 					<span class="font-mono text-[9px] tracking-[0.2em] text-muted-foreground uppercase"
-						>Registry Compliance 4.0</span
+						>Registry Online</span
 					>
 				</div>
 			</div>
@@ -438,13 +439,13 @@
 						value="blueprint"
 						class="px-8 py-2 font-mono text-[10px] tracking-widest uppercase"
 					>
-						01 // Shipyard Blueprint
+						Shipyard Blueprint
 					</Tabs.Trigger>
 					<Tabs.Trigger
 						value="arsenal"
 						class="px-8 py-2 font-mono text-[10px] tracking-widest uppercase"
 					>
-						02 // Artisan Arsenal
+						Artisan Arsenal
 					</Tabs.Trigger>
 				</Tabs.List>
 			</div>
@@ -558,7 +559,7 @@
 			<div>
 				<h3 class="text-xl font-bold tracking-tight">Michael Obele</h3>
 				<p class="mt-1 font-mono text-sm tracking-widest text-muted-foreground uppercase">
-					Mechanical Artisan // Software Engineer
+					Network Developer // System Architect
 				</p>
 			</div>
 
