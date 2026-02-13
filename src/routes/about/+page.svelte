@@ -25,6 +25,7 @@
 	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import { buttonVariants } from '$lib/components/ui/button';
 	import { fade, fly } from 'svelte/transition';
+	import { Lordicon } from '$lib/components/ui/lordicon';
 
 	const evolution = [
 		{
@@ -232,42 +233,22 @@
 
 				<!-- Visual Representation of Signal -->
 				<div
-					class="group relative aspect-square overflow-hidden rounded-lg border border-border bg-background/50 md:aspect-video"
+					class="relative flex items-center justify-center rounded-xl border border-border/30 bg-background/50 p-8 dark:border-transparent dark:shadow-inner"
 				>
-					<!-- Abstract "Waves" -->
+					<!-- Lordicon Flagship Visual -->
 					<div
-						class="absolute inset-0 flex items-center justify-center p-6 opacity-30 transition-opacity duration-700 group-hover:opacity-20"
-					>
-						<div class="flex h-32 items-end gap-1">
-							{#each Array(24) as _, i}
-								<div
-									class="w-1 rounded-full bg-border"
-									style="height: {Math.sin(i * 0.5) * 40 + 60}%"
-								></div>
-							{/each}
-						</div>
-					</div>
+						class="absolute inset-0 bg-[radial-gradient(circle_at_center,var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent"
+					></div>
 
-					<!-- Signal Overlay -->
-					<div class="absolute inset-0 flex flex-col items-center justify-center">
-						<div
-							class="w-56 space-y-4 rounded-lg border border-border bg-background/90 p-6 shadow-2xl backdrop-blur-xl"
-						>
-							<div class="flex items-center justify-between border-b border-border pb-3">
-								<div class="flex items-center gap-2">
-									<Signal class="size-3 animate-pulse text-primary" />
-									<span class="font-mono text-[10px] text-muted-foreground uppercase"
-										>High Signal</span
-									>
-								</div>
-								<span class="font-mono text-[9px] text-muted-foreground/60">Curated</span>
-							</div>
-							<div class="space-y-2">
-								<div class="h-1 w-full rounded-full bg-primary/40"></div>
-								<div class="h-1 w-3/4 rounded-full bg-border"></div>
-							</div>
-						</div>
-					</div>
+					<Lordicon
+						src="https://cdn.lordicon.com/rxdjhpeg.json"
+						primaryColor="#d46211"
+						secondaryColor="#475569"
+						loopAfterIn={true}
+						delay={500}
+						size={450}
+						height={550}
+					/>
 				</div>
 			</div>
 		</div>
@@ -290,56 +271,54 @@
 			</div>
 		</div>
 
-		<div class="mx-auto max-w-4xl">
-			<Accordion.Root type="single" value="step-1" class="w-full">
-				{#each evolution as step, i}
-					<Accordion.Item
-						value="step-{i + 1}"
-						class="mb-4 rounded-xl border border-border bg-card/30 backdrop-blur-sm transition-all hover:bg-card/50"
-					>
-						<Accordion.Trigger class="px-6 py-8 hover:no-underline">
-							<div class="flex items-center gap-6 text-left">
-								<div
-									class="flex size-12 items-center justify-center rounded-lg border border-primary/20 bg-primary/5 text-primary"
-								>
-									<svelte:component this={step.icon} class="size-6" />
-								</div>
-								<div>
-									<div class="font-mono text-[10px] tracking-widest text-primary uppercase">
-										{step.year} // 0{i + 1}
-									</div>
-									<h3 class="text-2xl font-bold tracking-tight">{step.title}</h3>
-								</div>
+		<Accordion.Root type="single" value="step-1" class="mb-12 w-full">
+			{#each evolution as step, i (step.title)}
+				<Accordion.Item
+					value="step-{i + 1}"
+					class="mb-4 rounded-xl border border-border bg-card/30 backdrop-blur-sm transition-all hover:bg-card/50"
+				>
+					<Accordion.Trigger class="px-6 py-8 hover:no-underline">
+						<div class="flex items-center gap-6 text-left">
+							<div
+								class="flex size-12 items-center justify-center rounded-lg border border-primary/20 bg-primary/5 text-primary"
+							>
+								<step.icon class="size-6" />
 							</div>
-						</Accordion.Trigger>
-						<Accordion.Content class="px-6 pb-8">
-							<div class="pl-0 md:pl-18">
-								<p class="mb-8 text-lg leading-relaxed text-muted-foreground">
-									{step.description}
-								</p>
+							<div>
+								<div class="font-mono text-[10px] tracking-widest text-primary uppercase">
+									{step.year} // 0{i + 1}
+								</div>
+								<h3 class="text-2xl font-bold tracking-tight">{step.title}</h3>
+							</div>
+						</div>
+					</Accordion.Trigger>
+					<Accordion.Content class="px-6 pb-8">
+						<div class="pl-0 md:pl-18">
+							<p class="mb-8 text-lg leading-relaxed text-muted-foreground">
+								{step.description}
+							</p>
 
-								<div class="grid gap-4 md:grid-cols-2">
-									{#each step.evidence as item}
+							<div class="grid gap-4 md:grid-cols-2">
+								{#each step.evidence as item (item)}
+									<div
+										class="group flex items-center gap-3 rounded-lg border border-border/50 bg-secondary/40 p-4 transition-colors hover:border-primary/30"
+									>
 										<div
-											class="group flex items-center gap-3 rounded-lg border border-border/50 bg-secondary/40 p-4 transition-colors hover:border-primary/30"
+											class="flex h-6 w-1 shrink-0 rounded-full bg-border transition-colors group-hover:bg-primary/50"
+										></div>
+										<span
+											class="text-sm font-medium text-muted-foreground group-hover:text-foreground"
 										>
-											<div
-												class="flex h-6 w-1 shrink-0 rounded-full bg-border transition-colors group-hover:bg-primary/50"
-											></div>
-											<span
-												class="text-sm font-medium text-muted-foreground group-hover:text-foreground"
-											>
-												{item}
-											</span>
-										</div>
-									{/each}
-								</div>
+											{item}
+										</span>
+									</div>
+								{/each}
 							</div>
-						</Accordion.Content>
-					</Accordion.Item>
-				{/each}
-			</Accordion.Root>
-		</div>
+						</div>
+					</Accordion.Content>
+				</Accordion.Item>
+			{/each}
+		</Accordion.Root>
 	</section>
 
 	<!-- Core Philosophy Bento -->
@@ -393,7 +372,7 @@
 						<div
 							class="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-secondary transition-colors group-hover:border-primary/50"
 						>
-							<svelte:component this={item.icon} class="size-5 {item.color}" />
+							<item.icon class="size-5 {item.color}" />
 						</div>
 					</div>
 					<h3 class="text-lg font-bold tracking-tight">{item.title}</h3>
@@ -409,7 +388,7 @@
 			>
 				<div class="text-center">
 					<div class="mx-auto mb-2 flex justify-center gap-1">
-						{#each Array(3) as _}
+						{#each Array(3) as _, i (i)}
 							<div class="size-1 rounded-full bg-muted-foreground/30"></div>
 						{/each}
 					</div>
