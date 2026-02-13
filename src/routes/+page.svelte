@@ -181,29 +181,29 @@
 					<!-- Filter Controls -->
 					<div class="flex items-center gap-1 rounded-md border border-border bg-secondary/30 p-1">
 						<button
-							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all ease-out hover:scale-[1.02] hover:bg-accent/50"
-							class:bg-primary={filterMode.current === 'all'}
-							class:text-primary-foreground={filterMode.current === 'all'}
-							class:text-muted-foreground={filterMode.current !== 'all'}
+							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all ease-out hover:scale-[1.02] hover:bg-accent/50 {filterMode.current ===
+							'all'
+								? 'bg-primary text-primary-foreground'
+								: 'text-muted-foreground'}"
 							onclick={() => (filterMode.current = 'all')}
 						>
 							ALL
 						</button>
 						<button
-							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all ease-out hover:scale-[1.02] hover:bg-accent/50"
-							class:bg-primary={filterMode.current === 'new'}
-							class:text-primary-foreground={filterMode.current === 'new'}
-							class:text-muted-foreground={filterMode.current !== 'new'}
+							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all ease-out hover:scale-[1.02] hover:bg-accent/50 {filterMode.current ===
+							'new'
+								? 'bg-primary text-primary-foreground'
+								: 'text-muted-foreground'}"
 							onclick={() => (filterMode.current = 'new')}
 						>
 							<Sparkles class="size-3" />
 							NEW
 						</button>
 						<button
-							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all ease-out hover:scale-[1.02] hover:bg-accent/50"
-							class:bg-primary={filterMode.current === 'trending'}
-							class:text-primary-foreground={filterMode.current === 'trending'}
-							class:text-muted-foreground={filterMode.current !== 'trending'}
+							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all ease-out hover:scale-[1.02] hover:bg-accent/50 {filterMode.current ===
+							'trending'
+								? 'bg-primary text-primary-foreground'
+								: 'text-muted-foreground'}"
 							onclick={() => (filterMode.current = 'trending')}
 						>
 							<TrendingUp class="size-3" />
@@ -214,10 +214,10 @@
 					<!-- Sort Controls -->
 					<div class="flex items-center gap-1 rounded-md border border-border bg-secondary/30 p-1">
 						<button
-							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
-							class:bg-accent={sortMode.current === 'name'}
-							class:text-primary={sortMode.current === 'name'}
-							class:text-muted-foreground={sortMode.current !== 'name'}
+							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50 {sortMode.current ===
+							'name'
+								? 'bg-accent text-primary'
+								: 'text-muted-foreground'}"
 							onclick={() => (sortMode.current = 'name')}
 							aria-label="Sort by Name"
 							title="Sort by Name"
@@ -226,10 +226,10 @@
 							<span class="hidden lg:inline">Name</span>
 						</button>
 						<button
-							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
-							class:bg-accent={sortMode.current === 'stars'}
-							class:text-primary={sortMode.current === 'stars'}
-							class:text-muted-foreground={sortMode.current !== 'stars'}
+							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50 {sortMode.current ===
+							'stars'
+								? 'bg-accent text-primary'
+								: 'text-muted-foreground'}"
 							onclick={() => (sortMode.current = 'stars')}
 							aria-label="Sort by Stars"
 							title="Sort by Stars"
@@ -238,10 +238,10 @@
 							<span class="hidden lg:inline">Stars</span>
 						</button>
 						<button
-							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
-							class:bg-accent={sortMode.current === 'updated'}
-							class:text-primary={sortMode.current === 'updated'}
-							class:text-muted-foreground={sortMode.current !== 'updated'}
+							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50 {sortMode.current ===
+							'updated'
+								? 'bg-accent text-primary'
+								: 'text-muted-foreground'}"
 							onclick={() => (sortMode.current = 'updated')}
 							aria-label="Sort by Date"
 							title="Sort by Date"
@@ -250,10 +250,10 @@
 							<span class="hidden lg:inline">Date</span>
 						</button>
 						<button
-							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
-							class:bg-accent={sortMode.current === 'type'}
-							class:text-primary={sortMode.current === 'type'}
-							class:text-muted-foreground={sortMode.current !== 'type'}
+							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50 {sortMode.current ===
+							'type'
+								? 'bg-accent text-primary'
+								: 'text-muted-foreground'}"
 							onclick={() => (sortMode.current = 'type')}
 							aria-label="Sort by Type"
 							title="Sort by Type"
@@ -281,20 +281,20 @@
 
 					<div class="flex rounded-md border border-border bg-secondary/30 p-1">
 						<button
-							class="rounded px-2 py-1 transition-colors hover:bg-accent/50"
-							class:bg-accent={viewMode.current === 'grid'}
-							class:text-primary={viewMode.current === 'grid'}
-							class:text-muted-foreground={viewMode.current !== 'grid'}
+							class="rounded px-2 py-1 transition-colors hover:bg-accent/50 {viewMode.current ===
+							'grid'
+								? 'bg-accent text-primary'
+								: 'text-muted-foreground'}"
 							onclick={() => (viewMode.current = 'grid')}
 							aria-label="Grid view"
 						>
 							<LayoutGrid class="size-4" />
 						</button>
 						<button
-							class="rounded px-2 py-1 transition-colors hover:bg-accent/50"
-							class:bg-accent={viewMode.current === 'list'}
-							class:text-primary={viewMode.current === 'list'}
-							class:text-muted-foreground={viewMode.current !== 'list'}
+							class="rounded px-2 py-1 transition-colors hover:bg-accent/50 {viewMode.current ===
+							'list'
+								? 'bg-accent text-primary'
+								: 'text-muted-foreground'}"
 							onclick={() => (viewMode.current = 'list')}
 							aria-label="List view"
 						>
