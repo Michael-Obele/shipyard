@@ -121,6 +121,12 @@
 	};
 
 	const IconComponent = $derived(iconComponents[typeConfig.icon] || Code);
+
+	let totalStars = $derived(
+		project.isCluster && project.subProjects
+			? project.subProjects.reduce((sum, p) => sum + p.stars, 0) + project.stars
+			: project.stars
+	);
 </script>
 
 <svelte:head>
@@ -226,7 +232,7 @@
 							<span class="flex items-center gap-2 text-sm font-medium">
 								<Star class="size-4 text-yellow-500" /> Stars
 							</span>
-							<span class="font-mono text-lg font-bold">{project.stars}</span>
+							<span class="font-mono text-lg font-bold">{totalStars}</span>
 						</div>
 						<div class="flex items-center justify-between border-b border-border/50 pb-4">
 							<span class="flex items-center gap-2 text-sm font-medium">
@@ -375,7 +381,7 @@
 										Stars
 									</p>
 									<p class="mt-1 text-lg font-bold text-foreground">
-										{project.stars.toLocaleString()}
+										{totalStars.toLocaleString()}
 									</p>
 								</div>
 							</div>

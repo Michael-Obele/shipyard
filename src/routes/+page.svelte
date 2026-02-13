@@ -35,17 +35,21 @@
 	import ProjectCard from '$lib/components/page/ProjectCard.svelte';
 	import { getProjects } from '$lib/remote/projects.remote';
 	import type { DisplayProject } from '$lib/types';
+	import { PersistedState } from 'runed';
 
 	let { data } = $props();
 
 	// --- State Management ---
 	// Initialize with SSR data, but keep it bindable/refreshable
 	let allProjects = $derived<DisplayProject[]>(data.projects || []);
-	let searchQuery = $state('');
-	let viewMode = $state<'grid' | 'list'>('grid');
-	let sortMode = $state<'name' | 'stars' | 'updated' | 'type'>('name');
-	let filterMode = $state<'all' | 'new' | 'trending'>('all');
-	let sortDirection = $state<'asc' | 'desc'>('asc');
+	let searchQuery = new PersistedState('shipyard-search', '');
+	let viewMode = new PersistedState<'grid' | 'list'>('shipyard-view-mode', 'grid');
+	let sortMode = new PersistedState<'name' | 'stars' | 'updated' | 'type'>(
+		'shipyard-sort-mode',
+		'name'
+	);
+	let filterMode = new PersistedState<'all' | 'new' | 'trending'>('shipyard-filter-mode', 'all');
+	let sortDirection = new PersistedState<'asc' | 'desc'>('shipyard-sort-direction', 'asc');
 	let isScrolled = $state(false);
 
 	// --- Side Effects ---
@@ -76,32 +80,32 @@
 		allProjects
 			.filter((p) => {
 				// Search Query Filter
-				const q = searchQuery.toLowerCase();
+				const q = searchQuery.current.toLowerCase();
 				const matchesSearch =
-					!searchQuery ||
+					!searchQuery.current ||
 					p.name.toLowerCase().includes(q) ||
 					p.description?.toLowerCase().includes(q) ||
 					p.topics?.some((t) => t.toLowerCase().includes(q));
 
 				// Feature Filter
 				let matchesFilter = true;
-				if (filterMode === 'new') matchesFilter = !!p.isNew;
-				if (filterMode === 'trending') matchesFilter = !!p.isTrending;
+				if (filterMode.current === 'new') matchesFilter = !!p.isNew;
+				if (filterMode.current === 'trending') matchesFilter = !!p.isTrending;
 
 				return matchesSearch && matchesFilter;
 			})
 			.sort((a, b) => {
-				const dir = sortDirection === 'asc' ? 1 : -1;
+				const dir = sortDirection.current === 'asc' ? 1 : -1;
 
-				if (sortMode === 'stars') {
+				if (sortMode.current === 'stars') {
 					return (a.stars - b.stars) * dir;
 				}
 
-				if (sortMode === 'updated') {
+				if (sortMode.current === 'updated') {
 					return (new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()) * dir;
 				}
 
-				if (sortMode === 'type') {
+				if (sortMode.current === 'type') {
 					const typeA = a.projectType || 'zz'; // Push undefined to end
 					const typeB = b.projectType || 'zz';
 					return typeA.localeCompare(typeB) * dir;
@@ -169,7 +173,7 @@
 						<input
 							type="text"
 							placeholder="Search manifest..."
-							bind:value={searchQuery}
+							bind:value={searchQuery.current}
 							class="h-10 w-full rounded-md border border-border bg-secondary/30 pr-4 pl-9 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
 						/>
 					</div>
@@ -177,31 +181,30 @@
 					<!-- Filter Controls -->
 					<div class="flex items-center gap-1 rounded-md border border-border bg-secondary/30 p-1">
 						<button
-							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all hover:bg-black/10 dark:hover:bg-white/5"
-							class:bg-background={filterMode === 'all'}
-							class:shadow-sm={filterMode === 'all'}
-							class:text-foreground={filterMode === 'all'}
-							class:text-muted-foreground={filterMode !== 'all'}
-							onclick={() => (filterMode = 'all')}
+							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all ease-out hover:scale-[1.02] hover:bg-accent/50"
+							class:bg-primary={filterMode.current === 'all'}
+							class:text-primary-foreground={filterMode.current === 'all'}
+							class:text-muted-foreground={filterMode.current !== 'all'}
+							onclick={() => (filterMode.current = 'all')}
 						>
 							ALL
 						</button>
 						<button
-							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all hover:bg-black/10 dark:hover:bg-white/5"
-							class:bg-primary={filterMode === 'new'}
-							class:text-primary-foreground={filterMode === 'new'}
-							class:text-muted-foreground={filterMode !== 'new'}
-							onclick={() => (filterMode = 'new')}
+							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all ease-out hover:scale-[1.02] hover:bg-accent/50"
+							class:bg-primary={filterMode.current === 'new'}
+							class:text-primary-foreground={filterMode.current === 'new'}
+							class:text-muted-foreground={filterMode.current !== 'new'}
+							onclick={() => (filterMode.current = 'new')}
 						>
 							<Sparkles class="size-3" />
 							NEW
 						</button>
 						<button
-							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all hover:bg-black/10 dark:hover:bg-white/5"
-							class:bg-orange-500={filterMode === 'trending'}
-							class:text-white={filterMode === 'trending'}
-							class:text-muted-foreground={filterMode !== 'trending'}
-							onclick={() => (filterMode = 'trending')}
+							class="flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-bold transition-all ease-out hover:scale-[1.02] hover:bg-accent/50"
+							class:bg-primary={filterMode.current === 'trending'}
+							class:text-primary-foreground={filterMode.current === 'trending'}
+							class:text-muted-foreground={filterMode.current !== 'trending'}
+							onclick={() => (filterMode.current = 'trending')}
 						>
 							<TrendingUp class="size-3" />
 							TRENDING
@@ -212,10 +215,10 @@
 					<div class="flex items-center gap-1 rounded-md border border-border bg-secondary/30 p-1">
 						<button
 							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
-							class:bg-accent={sortMode === 'name'}
-							class:text-primary={sortMode === 'name'}
-							class:text-muted-foreground={sortMode !== 'name'}
-							onclick={() => (sortMode = 'name')}
+							class:bg-accent={sortMode.current === 'name'}
+							class:text-primary={sortMode.current === 'name'}
+							class:text-muted-foreground={sortMode.current !== 'name'}
+							onclick={() => (sortMode.current = 'name')}
 							aria-label="Sort by Name"
 							title="Sort by Name"
 						>
@@ -224,10 +227,10 @@
 						</button>
 						<button
 							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
-							class:bg-accent={sortMode === 'stars'}
-							class:text-primary={sortMode === 'stars'}
-							class:text-muted-foreground={sortMode !== 'stars'}
-							onclick={() => (sortMode = 'stars')}
+							class:bg-accent={sortMode.current === 'stars'}
+							class:text-primary={sortMode.current === 'stars'}
+							class:text-muted-foreground={sortMode.current !== 'stars'}
+							onclick={() => (sortMode.current = 'stars')}
 							aria-label="Sort by Stars"
 							title="Sort by Stars"
 						>
@@ -236,10 +239,10 @@
 						</button>
 						<button
 							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
-							class:bg-accent={sortMode === 'updated'}
-							class:text-primary={sortMode === 'updated'}
-							class:text-muted-foreground={sortMode !== 'updated'}
-							onclick={() => (sortMode = 'updated')}
+							class:bg-accent={sortMode.current === 'updated'}
+							class:text-primary={sortMode.current === 'updated'}
+							class:text-muted-foreground={sortMode.current !== 'updated'}
+							onclick={() => (sortMode.current = 'updated')}
 							aria-label="Sort by Date"
 							title="Sort by Date"
 						>
@@ -248,10 +251,10 @@
 						</button>
 						<button
 							class="flex items-center gap-1 rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
-							class:bg-accent={sortMode === 'type'}
-							class:text-primary={sortMode === 'type'}
-							class:text-muted-foreground={sortMode !== 'type'}
-							onclick={() => (sortMode = 'type')}
+							class:bg-accent={sortMode.current === 'type'}
+							class:text-primary={sortMode.current === 'type'}
+							class:text-muted-foreground={sortMode.current !== 'type'}
+							onclick={() => (sortMode.current = 'type')}
 							aria-label="Sort by Type"
 							title="Sort by Type"
 						>
@@ -263,11 +266,12 @@
 
 						<button
 							class="flex items-center justify-center rounded px-2 py-1 text-xs font-medium transition-colors hover:bg-accent/50"
-							onclick={() => (sortDirection = sortDirection === 'asc' ? 'desc' : 'asc')}
-							aria-label={sortDirection === 'asc' ? 'Ascending' : 'Descending'}
-							title={sortDirection === 'asc' ? 'Ascending' : 'Descending'}
+							onclick={() =>
+								(sortDirection.current = sortDirection.current === 'asc' ? 'desc' : 'asc')}
+							aria-label={sortDirection.current === 'asc' ? 'Ascending' : 'Descending'}
+							title={sortDirection.current === 'asc' ? 'Ascending' : 'Descending'}
 						>
-							{#if sortDirection === 'asc'}
+							{#if sortDirection.current === 'asc'}
 								<ArrowUp class="size-3 text-muted-foreground" />
 							{:else}
 								<ArrowDown class="size-3 text-muted-foreground" />
@@ -278,20 +282,20 @@
 					<div class="flex rounded-md border border-border bg-secondary/30 p-1">
 						<button
 							class="rounded px-2 py-1 transition-colors hover:bg-accent/50"
-							class:bg-accent={viewMode === 'grid'}
-							class:text-primary={viewMode === 'grid'}
-							class:text-muted-foreground={viewMode !== 'grid'}
-							onclick={() => (viewMode = 'grid')}
+							class:bg-accent={viewMode.current === 'grid'}
+							class:text-primary={viewMode.current === 'grid'}
+							class:text-muted-foreground={viewMode.current !== 'grid'}
+							onclick={() => (viewMode.current = 'grid')}
 							aria-label="Grid view"
 						>
 							<LayoutGrid class="size-4" />
 						</button>
 						<button
 							class="rounded px-2 py-1 transition-colors hover:bg-accent/50"
-							class:bg-accent={viewMode === 'list'}
-							class:text-primary={viewMode === 'list'}
-							class:text-muted-foreground={viewMode !== 'list'}
-							onclick={() => (viewMode = 'list')}
+							class:bg-accent={viewMode.current === 'list'}
+							class:text-primary={viewMode.current === 'list'}
+							class:text-muted-foreground={viewMode.current !== 'list'}
+							onclick={() => (viewMode.current = 'list')}
 							aria-label="List view"
 						>
 							<List class="size-4" />
@@ -478,7 +482,7 @@
 					<span class="ml-auto font-mono text-sm text-muted-foreground">{cargo.length} UNITS</span>
 				</div>
 
-				{#if viewMode === 'grid'}
+				{#if viewMode.current === 'grid'}
 					<div
 						class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
 						in:fly={{ y: 20, duration: 300 }}

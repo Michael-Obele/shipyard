@@ -53,6 +53,7 @@
 		"lottie-web": "^5.13.0",
 		"lucide-svelte": "^0.563.0",
 		"mode-watcher": "^1.1.0",
+		"runed": "^0.37.1",
 		"tailwind-merge": "^3.4.0",
 		"valibot": "^1.2.0"
 	}
