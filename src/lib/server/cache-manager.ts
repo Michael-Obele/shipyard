@@ -11,6 +11,7 @@
 import { db } from './db';
 import type { RepoData } from '$lib/types';
 import type { Prisma } from '@prisma/client';
+import { addYears, addHours, subDays } from 'date-fns';
 
 // TTL in hours - configurable per environment
 const CACHE_TTL_HOURS = parseInt(process.env.REPO_CACHE_TTL ?? '6');
@@ -118,8 +119,7 @@ export async function setCachedRepositories(
 ): Promise<void> {
 	const now = new Date();
 	const effectiveTTL = ttlHours ?? CACHE_TTL_HOURS;
-	const ttlMs = effectiveTTL * 60 * 60 * 1000;
-	const expiresAt = new Date(now.getTime() + ttlMs);
+	const expiresAt = addHours(now, effectiveTTL);
 
 	try {
 		await db.cluster.upsert({
@@ -161,9 +161,22 @@ export async function setCachedRepositories(
  */
 export async function startCacheRefresh(clusterName: string): Promise<void> {
 	try {
-		await db.cluster.update({
+		const now = new Date();
+		const farFuture = addYears(now, 100); // 100 years
+
+		await db.cluster.upsert({
 			where: { name: clusterName },
-			data: { status: 'refreshing' }
+			update: {
+				status: 'refreshing',
+				updatedAt: now
+			},
+			create: {
+				name: clusterName,
+				status: 'refreshing',
+				repoNames: [],
+				data: [],
+				expiresAt: farFuture // Temporary until first real fetch
+			}
 		});
 
 		console.log(`[Cache] Marked ${clusterName} as refreshing`);
@@ -182,13 +195,23 @@ export async function completeCacheRefresh(
 ): Promise<void> {
 	const now = new Date();
 	const effectiveTTL = ttlHours ?? CACHE_TTL_HOURS;
-	const ttlMs = effectiveTTL * 60 * 60 * 1000;
-	const expiresAt = new Date(now.getTime() + ttlMs);
+	const expiresAt = addHours(now, effectiveTTL);
 
 	try {
-		await db.cluster.update({
+		await db.cluster.upsert({
 			where: { name: clusterName },
-			data: {
+			update: {
+				data: repos as any,
+				repoNames: repos.map((r) => r.name),
+				fetchedAt: now,
+				expiresAt,
+				status: 'ok',
+				errorCount: 0,
+				lastError: null,
+				updatedAt: now
+			},
+			create: {
+				name: clusterName,
 				data: repos as any,
 				repoNames: repos.map((r) => r.name),
 				fetchedAt: now,
@@ -215,7 +238,21 @@ export async function recordCacheError(clusterName: string, error: Error): Promi
 			where: { name: clusterName }
 		});
 
-		if (!cache) return;
+		if (!cache) {
+			// If it doesn't exist, create it in error state
+			await db.cluster.create({
+				data: {
+					name: clusterName,
+					status: 'error',
+					lastError: error.message,
+					errorCount: 1,
+					repoNames: [],
+					data: [],
+					expiresAt: new Date()
+				}
+			});
+			return;
+		}
 
 		const newErrorCount = (cache.errorCount ?? 0) + 1;
 		const newStatus = newErrorCount >= ERROR_THRESHOLD ? 'error' : 'refreshing';
@@ -273,7 +310,7 @@ export async function invalidateCache(clusterName?: string): Promise<void> {
 			await db.cluster.update({
 				where: { name: clusterName },
 				data: {
-					fetchedAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
+					fetchedAt: subDays(new Date(), 1)
 				}
 			});
 
@@ -282,7 +319,7 @@ export async function invalidateCache(clusterName?: string): Promise<void> {
 			// Invalidate all caches
 			await db.cluster.updateMany({
 				data: {
-					fetchedAt: new Date(Date.now() - 24 * 60 * 60 * 1000)
+					fetchedAt: subDays(new Date(), 1)
 				}
 			});
 

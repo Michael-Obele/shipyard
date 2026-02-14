@@ -68,38 +68,61 @@ async function fetchClusterFromGitHub(
 		throw new Error('GITHUB_TOKEN environment variable is not set');
 	}
 
+	// Early exit for empty clusters
+	if (repoNames.length === 0) {
+		console.log(`[GitHub] Cluster ${clusterName} has no repositories, skipping fetch`);
+		return { repos: [], rateLimit: null };
+	}
+
 	const startTime = Date.now();
 
+	// Default owner if not specified in repo name
+	const DEFAULT_OWNER = 'potent';
+
 	// Build GraphQL query for specific repos
-	// Using aliases to query multiple repos without pagination
+	// Using aliases to query multiple repos efficiently
 	const aliases = repoNames
-		.map((name, idx) => `repo${idx}: repository(owner: "potent", name: "${name}")`)
-		.join(' ');
+		.map((name, idx) => {
+			let owner = DEFAULT_OWNER;
+			let repoName = name;
+
+			if (name.includes('/')) {
+				[owner, repoName] = name.split('/');
+			}
+
+			return `
+      repo${idx}: repository(owner: "${owner}", name: "${repoName}") {
+        ...RepoFields
+      }`;
+		})
+		.join('\n');
 
 	const query = `
-    query {
-      ${aliases} {
-        id
-        name
-        url
-        description
-        isArchived
-        stargazerCount
-        updatedAt
-        repositoryTopics(first: 5) {
-          nodes {
-            topic {
-              name
-            }
-          }
-        }
-        languages(first: 3, orderBy: { field: SIZE, direction: DESC }) {
-          nodes {
+    fragment RepoFields on Repository {
+      id
+      name
+      url
+      description
+      isArchived
+      stargazerCount
+      updatedAt
+      repositoryTopics(first: 5) {
+        nodes {
+          topic {
             name
-            color
           }
         }
       }
+      languages(first: 3, orderBy: { field: SIZE, direction: DESC }) {
+        nodes {
+          name
+          color
+        }
+      }
+    }
+
+    query {
+      ${aliases}
       rateLimit {
         limit
         remaining
