@@ -4,6 +4,7 @@ export interface RepoData {
 	description: string | null;
 	url: string;
 	isFork: boolean;
+	isArchived: boolean;
 	stargazers: {
 		totalCount: number;
 	};
@@ -40,6 +41,7 @@ export interface DisplayProject {
 	isNew?: boolean;
 	isTrending?: boolean;
 	isFlagship?: boolean;
+	isArchived?: boolean;
 	experimental: boolean;
 	projectType?: 'app' | 'api' | 'library' | 'mcp-server' | 'plugin' | 'tool' | 'docs' | 'framework';
 	repoCount?: number;

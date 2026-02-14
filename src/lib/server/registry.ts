@@ -169,6 +169,9 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 			return new Date(r.updatedAt) > new Date(latest) ? r.updatedAt : latest;
 		}, groupRepos[0].updatedAt);
 
+		// Check if all repos in group are archived
+		const isArchived = groupRepos.every((r) => r.isArchived);
+
 		// Merge topics and languages from all repos in group, deduplicated
 		const topics = Array.from(
 			new Set(groupRepos.flatMap((r) => r.repositoryTopics.nodes.map((n) => n.topic.name)))
@@ -190,6 +193,7 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 			isCluster: true,
 			featured: group.featured,
 			isFlagship: group.flagship || false,
+			isArchived,
 			experimental:
 				group.experimental ||
 				topics.includes('experimental') ||
@@ -230,6 +234,7 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 			isCluster: false,
 			featured: override?.featured || false,
 			isFlagship: override?.flagship || false,
+			isArchived: repo.isArchived,
 			experimental:
 				override?.experimental ||
 				repo.repositoryTopics.nodes.some(

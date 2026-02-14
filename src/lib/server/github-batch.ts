@@ -45,6 +45,7 @@ interface GitHubRepo {
 	name: string;
 	url: string;
 	description: string | null;
+	isArchived: boolean;
 	stargazerCount: number;
 	updatedAt: string;
 	repositoryTopics: {
@@ -82,6 +83,7 @@ async function fetchClusterFromGitHub(
         name
         url
         description
+        isArchived
         stargazerCount
         updatedAt
         repositoryTopics(first: 5) {
@@ -148,6 +150,7 @@ async function fetchClusterFromGitHub(
 					url: ghRepo.url,
 					description: ghRepo.description,
 					isFork: false, // Default for batch fetcher
+					isArchived: ghRepo.isArchived,
 					stargazers: {
 						totalCount: ghRepo.stargazerCount
 					},

@@ -2,7 +2,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import type { DisplayProject } from '$lib/types';
-	import { Terminal, Star, ChevronRight, Sparkles, TrendingUp } from '@lucide/svelte';
+	import { Terminal, Star, ChevronRight, Sparkles, TrendingUp, Archive } from '@lucide/svelte';
 	import { cn } from '$lib/utils';
 
 	let { project }: { project: DisplayProject } = $props();
@@ -75,6 +75,14 @@
 							>
 								<TrendingUp class="mr-1 size-2.5" />
 								TRENDING
+							</Badge>
+						{/if}
+						{#if project.isArchived}
+							<Badge
+								class="rounded-none border-gray-500/20 bg-gray-500/10 px-1.5 py-0 font-mono text-[9px] font-bold tracking-wider text-gray-500 hover:bg-gray-500/20"
+							>
+								<Archive class="mr-1 size-2.5" />
+								ARCHIVED
 							</Badge>
 						{/if}
 						{#if typeLabel}

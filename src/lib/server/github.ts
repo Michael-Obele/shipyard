@@ -15,6 +15,7 @@ query {
         description
         url
         isFork
+        isArchived
         stargazers {
             totalCount
         }

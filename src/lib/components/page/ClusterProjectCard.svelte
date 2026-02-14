@@ -3,7 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import type { DisplayProject } from '$lib/types';
-	import { Container, ArrowRight, CalendarDays, Star, Sparkles, TrendingUp } from '@lucide/svelte';
+	import { Container, ArrowRight, CalendarDays, Star, Sparkles, TrendingUp, Archive } from '@lucide/svelte';
 	import * as HoverCard from '$lib/components/ui/hover-card';
 
 	let { project }: { project: DisplayProject } = $props();
@@ -69,6 +69,14 @@
 							>
 								<TrendingUp class="mr-1 size-2.5" />
 								TRENDING
+							</Badge>
+						{/if}
+						{#if project.isArchived}
+							<Badge
+								class="rounded-none border-white/20 bg-white/10 px-1.5 py-0 font-mono text-[9px] font-bold tracking-wider text-white hover:bg-white/20"
+							>
+								<Archive class="mr-1 size-2.5" />
+								ARCHIVED
 							</Badge>
 						{/if}
 					</div>
