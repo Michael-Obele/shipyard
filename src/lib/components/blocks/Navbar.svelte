@@ -63,7 +63,7 @@
 		<!-- Actions -->
 		<div class="flex items-center gap-2">
 			<a
-				href="https://github.com"
+				href="https://github.com/Michael-Obele"
 				target="_blank"
 				rel="noreferrer"
 				class="hidden h-10 w-10 items-center justify-center rounded-md border border-border bg-secondary/50 transition-all hover:bg-accent hover:text-accent-foreground sm:flex"

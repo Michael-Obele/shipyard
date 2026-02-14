@@ -31,7 +31,7 @@
 				</p>
 				<div class="flex gap-3">
 					<a
-						href="https://github.com"
+						href="https://github.com/Michael-Obele"
 						target="_blank"
 						rel="noreferrer"
 						class="group flex size-9 items-center justify-center rounded-md border border-border bg-secondary/50 transition-all hover:border-primary/50 hover:bg-primary/10 hover:text-primary"
@@ -40,7 +40,7 @@
 						<Github class="size-4 transition-transform group-hover:scale-110" />
 					</a>
 					<a
-						href="https://twitter.com"
+						href="https://x.com/Dev_Obele"
 						target="_blank"
 						rel="noreferrer"
 						class="group flex size-9 items-center justify-center rounded-md border border-border bg-secondary/50 transition-all hover:border-primary/50 hover:bg-primary/10 hover:text-primary"

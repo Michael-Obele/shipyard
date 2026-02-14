@@ -7,7 +7,10 @@ export interface RegistryConfig {
 		flagship?: boolean;
 		experimental?: boolean;
 	}[];
-	overrides: Record<string, { name?: string; featured?: boolean; flagship?: boolean; experimental?: boolean }>;
+	overrides: Record<
+		string,
+		{ name?: string; featured?: boolean; flagship?: boolean; experimental?: boolean }
+	>;
 }
 
 export const registryConfig: RegistryConfig = {
@@ -27,7 +30,14 @@ export const registryConfig: RegistryConfig = {
 		{
 			id: 'mcps',
 			name: 'MCP Servers',
-			repos: ['shadcn-svelte-mcp', 'tauri-docs', 'rust-docs', 'go-docs', 'drizzle-docs-mcp', 'layerchart-docs'],
+			repos: [
+				'shadcn-svelte-mcp',
+				'tauri-docs',
+				'rust-docs',
+				'go-docs',
+				'drizzle-docs',
+				'layerchart-docs'
+			],
 			featured: true
 		},
 		{

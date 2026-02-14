@@ -77,7 +77,7 @@ async function fetchClusterFromGitHub(
 	const startTime = Date.now();
 
 	// Default owner if not specified in repo name
-	const DEFAULT_OWNER = 'potent';
+	const DEFAULT_OWNER = 'Michael-Obele';
 
 	// Build GraphQL query for specific repos
 	// Using aliases to query multiple repos efficiently
