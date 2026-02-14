@@ -9,6 +9,7 @@ import {
 	recordCacheError,
 	getStaleDataFallback
 } from './cache-manager';
+import { subDays } from 'date-fns';
 
 const REGISTRY_CACHE_KEY = '__system_registry__';
 
@@ -242,8 +243,8 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 	// 5. Filter & Sort
 	const CUTOFF_DATE = new Date('2025-01-01T00:00:00Z');
 	const NOW = new Date();
-	const FOURTEEN_DAYS_AGO = new Date(NOW.getTime() - 14 * 24 * 60 * 60 * 1000);
-	const THIRTY_DAYS_AGO = new Date(NOW.getTime() - 30 * 24 * 60 * 60 * 1000);
+	const FOURTEEN_DAYS_AGO = subDays(NOW, 14);
+	const THIRTY_DAYS_AGO = subDays(NOW, 30);
 
 	const sortedProjects = displayProjects
 		.filter((p) => new Date(p.updatedAt) >= CUTOFF_DATE)
