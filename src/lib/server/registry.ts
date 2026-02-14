@@ -155,7 +155,7 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 	for (const group of config.groups || []) {
 		const groupRepos = group.repos
 			.map((name) => {
-				processedRepos.add(name);
+				// processedRepos.add(name); // Comment out to include individual repos from groups
 				return repoMap.get(name);
 			})
 			.filter((r) => r !== undefined) as RepoData[];
@@ -252,7 +252,7 @@ export async function getRegistry(): Promise<DisplayProject[]> {
 			return {
 				...p,
 				isNew: updatedAt >= FOURTEEN_DAYS_AGO,
-				isTrending: p.stars >= 3 && updatedAt >= THIRTY_DAYS_AGO
+				isTrending: p.stars > 3
 			};
 		})
 		.sort((a, b) => {
