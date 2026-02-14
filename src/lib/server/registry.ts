@@ -103,14 +103,14 @@ function detectProjectType(repo: RepoData): DisplayProject['projectType'] {
 	return 'tool';
 }
 
-export async function getRegistry(): Promise<DisplayProject[]> {
+export async function getRegistry(forceRefresh: boolean = false): Promise<DisplayProject[]> {
 	console.log(`[Registry] getRegistry called. Checking cache...`);
 	// 1. Load Registry Config
 	const config = registryConfig;
 
 	// 2. Fetch GitHub Data with Caching
 	let repos: RepoData[] | null = null;
-	const needsRefresh = await shouldRefreshCluster(REGISTRY_CACHE_KEY);
+	const needsRefresh = forceRefresh || await shouldRefreshCluster(REGISTRY_CACHE_KEY);
 
 	if (!needsRefresh) {
 		console.log(`[Registry] Cache hit for ${REGISTRY_CACHE_KEY}`);

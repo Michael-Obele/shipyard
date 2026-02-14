@@ -130,13 +130,24 @@ export const invalidateCacheRemote = query(
  * Used for maintenance operations
  */
 export const forceRefreshRemote = query(async () => {
-  const { forceRefreshAllClusters } = await import('$lib/server/github-batch');
+  // Only allow in development environment
+  if (process.env.NODE_ENV !== 'development') {
+    throw new Error('Force refresh is only available in development environment');
+  }
 
+  const { forceRefreshAllClusters } = await import('$lib/server/github-batch');
+  const { getRegistry } = await import('$lib/server/registry');
+
+  // Refresh all clusters
   await forceRefreshAllClusters();
+
+  // Force refresh main registry
+  await getRegistry(true);
 
   return {
     success: true,
-    message: 'Started force refresh of all clusters',
+    message: 'Started force refresh of all clusters and main registry',
     timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV
   };
 });

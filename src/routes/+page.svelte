@@ -26,7 +26,8 @@
 		Tags,
 		Sparkles,
 		TrendingUp,
-		Flame
+		Flame,
+		RefreshCw
 	} from 'lucide-svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -34,8 +35,10 @@
 	import { Lordicon } from '$lib/components/ui/lordicon';
 	import ProjectCard from '$lib/components/page/ProjectCard.svelte';
 	import { getProjects } from '$lib/remote/projects.remote';
+	import { forceRefreshRemote } from '$lib/remote/repositories.remote';
 	import type { DisplayProject } from '$lib/types';
 	import { PersistedState } from 'runed';
+	import { dev } from '$app/environment';
 
 	let { data } = $props();
 
@@ -300,6 +303,20 @@
 						>
 							<List class="size-4" />
 						</button>
+						{#if dev}
+							<button
+								class="rounded px-2 py-1 text-muted-foreground transition-colors hover:bg-accent/50 hover:text-primary"
+								onclick={async () => {
+									await forceRefreshRemote();
+									// Refresh the page data
+									window.location.reload();
+								}}
+								aria-label="Force refresh cache (dev only)"
+								title="Force refresh cache (dev only)"
+							>
+								<RefreshCw class="size-4" />
+							</button>
+						{/if}
 					</div>
 				</div>
 			</div>
